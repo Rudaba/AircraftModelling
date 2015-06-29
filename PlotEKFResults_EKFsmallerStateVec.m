@@ -9,9 +9,9 @@ measData = [getData2.AO.data];
 time    = KF_OUT(:,1);
 predAO  = KF_OUT(:,2:7);
 states  = KF_OUT(:,8:20);
-covs    = sqrt(KF_OUT(:,27:39));
+covs    = KF_OUT(:,27:39);
 nu      = KF_OUT(:,40:45);
-S = KF_OUT(:,46:end); 
+S = KF_OUT(:,46:51); 
  
 
 name_string   = {'CX_dE';...
@@ -110,13 +110,13 @@ for i = 1:13
     figure
     plot(time,errors(:,i),'b')
     hold on
-    plot(time,2*covs(:,i),'--r')
+    plot(time,2*sqrt(covs(:,i)),'--r')
     hold on
-    plot(time,-2*covs(:,i),'--r')    
+    plot(time,-2*sqrt(covs(:,i)),'--r')    
     legend(name_string{i})
 end
 
 figure
-% plot(time,states)
+plot(time,states)
 
 

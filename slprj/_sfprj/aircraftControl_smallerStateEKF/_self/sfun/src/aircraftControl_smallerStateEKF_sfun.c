@@ -114,10 +114,10 @@ unsigned int sf_aircraftControl_smallerStateEKF_process_check_sum_call( int nlhs
       return 0;
     }
   } else {
-    ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(2936437884U);
-    ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(3333896951U);
-    ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(1565735339U);
-    ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(3309848105U);
+    ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(806802377U);
+    ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(772663739U);
+    ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(2215918950U);
+    ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(3775913229U);
   }
 
   return 1;
@@ -169,7 +169,7 @@ unsigned int sf_aircraftControl_smallerStateEKF_autoinheritance_info( int nlhs,
 
      case 2:
       {
-        if (strcmp(aiChksum, "CID6rmT4eMQ7PIXwQUuvDD") == 0) {
+        if (strcmp(aiChksum, "xNZ3bHc5ykNh1MeehaaG3C") == 0) {
           extern mxArray
             *sf_c2_aircraftControl_smallerStateEKF_get_autoinheritance_info(void);
           plhs[0] =
@@ -287,7 +287,7 @@ unsigned int sf_aircraftControl_smallerStateEKF_third_party_uses_info( int nlhs,
 
      case 2:
       {
-        if (strcmp(tpChksum, "bGrY11S7Y0iWG6vIOmiGtC") == 0) {
+        if (strcmp(tpChksum, "xdbCrjvREZsQ7s7eSrWlLF") == 0) {
           extern mxArray
             *sf_c2_aircraftControl_smallerStateEKF_third_party_uses_info(void);
           plhs[0] = sf_c2_aircraftControl_smallerStateEKF_third_party_uses_info();
@@ -337,7 +337,7 @@ unsigned int sf_aircraftControl_smallerStateEKF_updateBuildInfo_args_info( int
 
      case 2:
       {
-        if (strcmp(tpChksum, "bGrY11S7Y0iWG6vIOmiGtC") == 0) {
+        if (strcmp(tpChksum, "xdbCrjvREZsQ7s7eSrWlLF") == 0) {
           extern mxArray
             *sf_c2_aircraftControl_smallerStateEKF_updateBuildInfo_args_info
             (void);

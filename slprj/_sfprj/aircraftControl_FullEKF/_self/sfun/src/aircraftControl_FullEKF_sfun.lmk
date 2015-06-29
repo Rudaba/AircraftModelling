@@ -1,0 +1,41 @@
+CC     = "C:\Program Files (x86)\MATLAB\R2014a\sys\lcc\bin\lcc.exe"
+LD     = "C:\Program Files (x86)\MATLAB\R2014a\sys\lcc\bin\lcclnk.exe"
+LIBCMD = "C:\Program Files (x86)\MATLAB\R2014a\sys\lcc\bin\lcclib.exe"
+CFLAGS = -c -Zp8 -DMATLAB_MEX_FILE -noregistrylookup 
+LDFLAGS = -s -dll -L"C:\Program Files (x86)\MATLAB\R2014a\sys\lcc\lib" 
+LIBFLAGS = 
+
+OBJECTS = \
+	"aircraftControl_FullEKF_sfun.obj"\
+	"c1_aircraftControl_FullEKF.obj"\
+	"c2_aircraftControl_FullEKF.obj"\
+	"aircraftControl_FullEKF_sfun_registry.obj"\
+	"lccstub.obj"\
+	"C:\Program Files (x86)\MATLAB\R2014a\sys\lcc\mex\lccdef.def"\
+	"C:\Program Files (x86)\MATLAB\R2014a\extern\lib\win32\lcc\sf_runtime.lib"\
+	"C:\Program Files (x86)\MATLAB\R2014a\extern\lib\win32\lcc\libmwblas.lib"\
+	"C:\Program Files (x86)\MATLAB\R2014a\extern\lib\win32\lcc\libmx.lib"\
+	"C:\Program Files (x86)\MATLAB\R2014a\extern\lib\win32\lcc\libmex.lib"\
+	"C:\Program Files (x86)\MATLAB\R2014a\extern\lib\win32\lcc\libmat.lib"\
+	"C:\Program Files (x86)\MATLAB\R2014a\extern\lib\win32\lcc\libfixedpoint.lib"\
+	"C:\Program Files (x86)\MATLAB\R2014a\extern\lib\win32\lcc\libut.lib"\
+	"C:\Program Files (x86)\MATLAB\R2014a\extern\lib\win32\lcc\libmwmathutil.lib"\
+	"C:\Program Files (x86)\MATLAB\R2014a\extern\lib\win32\lcc\libemlrt.lib"\
+	"C:\Program Files (x86)\MATLAB\R2014a\extern\lib\win32\lcc\libmwsl_log_load_blocks.lib"\
+	"C:\Program Files (x86)\MATLAB\R2014a\lib\win32\libippmwipt.lib"\
+
+INCLUDE_PATH= -I"C:\Program Files (x86)\MATLAB\R2014a\sys\lcc\include"  -I"C:\Program Files (x86)\MATLAB\R2014a\extern\include"  -I"C:\Program Files (x86)\MATLAB\R2014a\simulink\include"  -I"C:\Program Files (x86)\MATLAB\R2014a\stateflow\c\mex\include"  -I"C:\Program Files (x86)\MATLAB\R2014a\rtw\c\src"  -I"C:\Users\Rudaba\Documents\PhD Take 2\Simulations\AircraftModelling\slprj\_sfprj\aircraftControl_FullEKF\_self\sfun\src" 
+ 
+
+aircraftControl_FullEKF_sfun.mexw32 : $(MAKEFILE) $(OBJECTS)
+	$(LD) $(LDFLAGS) -o aircraftControl_FullEKF_sfun.mexw32 @aircraftControl_FullEKF_sfun.lmko
+aircraftControl_FullEKF_sfun.obj :	"aircraftControl_FullEKF_sfun.c"
+	$(CC) $(CFLAGS) $(INCLUDE_PATH) "aircraftControl_FullEKF_sfun.c"
+c1_aircraftControl_FullEKF.obj :	"c1_aircraftControl_FullEKF.c"
+	$(CC) $(CFLAGS) $(INCLUDE_PATH) "c1_aircraftControl_FullEKF.c"
+c2_aircraftControl_FullEKF.obj :	"c2_aircraftControl_FullEKF.c"
+	$(CC) $(CFLAGS) $(INCLUDE_PATH) "c2_aircraftControl_FullEKF.c"
+aircraftControl_FullEKF_sfun_registry.obj :	"aircraftControl_FullEKF_sfun_registry.c"
+	$(CC) $(CFLAGS) $(INCLUDE_PATH) "aircraftControl_FullEKF_sfun_registry.c"
+lccstub.obj :	"C:\Program Files (x86)\MATLAB\R2014a\sys\lcc\mex\lccstub.c"
+	$(CC) $(CFLAGS) $(INCLUDE_PATH) "C:\Program Files (x86)\MATLAB\R2014a\sys\lcc\mex\lccstub.c"

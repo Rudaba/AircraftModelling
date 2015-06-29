@@ -6,30 +6,30 @@ if isempty(states)
     states = zeros(19,1);
     cov = zeros(19,19);
     
-    states(1,1)  = accelerations(1);    cov(1,1)   = 1e-5^2; % Body Acceleration X
-    states(2,1)  = accelerations(2);    cov(2,2)   = 1e-5^2; % Body Acceleration Y
-    states(3,1)  = accelerations(3);    cov(3,3)   = 1e-5^2; % Body Acceleration Z
+    states(1,1)  = accelerations(1);    cov(1,1)   = 1e-1^2; % Body Acceleration X
+    states(2,1)  = accelerations(2);    cov(2,2)   = 1e-1^2; % Body Acceleration Y
+    states(3,1)  = accelerations(3);    cov(3,3)   = 1e-1^2; % Body Acceleration Z
     
-    states(4,1)  = omega(1);    cov(4,4)   = 1e-5^2; % P
-    states(5,1)  = omega(2);    cov(5,5)   = 1e-5^2; % Q
-    states(6,1)  = omega(3);    cov(6,6)   = 1e-5^2; % R
+    states(4,1)  = omega(1);    cov(4,4)   = 1e-1^2; % P
+    states(5,1)  = omega(2);    cov(5,5)   = 1e-1^2; % Q
+    states(6,1)  = omega(3);    cov(6,6)   = 1e-1^2; % R
     
-    states(7,1)  = 1;           cov(7,7)   = 1e-3^2;
-    states(8,1)  = 1;           cov(8,8)   = 1e-3^2;
+    states(7,1)  = 1;           cov(7,7)   = 1e-1^2;
+    states(8,1)  = 1;           cov(8,8)   = 1e-1^2;
     
-    states(9,1)  = 1;           cov(9,9)   = 1e-3^2;
-    states(10,1) = 1;           cov(10,10) = 1e-3^2;
-    states(11,1) = 1;           cov(11,11) = 1e-3^2;
+    states(9,1)  = 1;           cov(9,9)   = 1e-1^2;
+    states(10,1) = 1;           cov(10,10) = 1e-1^2;
+    states(11,1) = 1;           cov(11,11) = 1e-1^2;
     
-    states(12,1) = 1;           cov(12,12) = 1e-3^2;
-    states(13,1) = 1;           cov(13,13) = 1e-3^2;
-    states(14,1) = 1;           cov(14,14) = 1e-3^2;
+    states(12,1) = 1;           cov(12,12) = 1e-1^2;
+    states(13,1) = 1;           cov(13,13) = 1e-1^2;
+    states(14,1) = 1;           cov(14,14) = 1e-1^2;
     
-    states(15,1) = 1;           cov(15,15) = 1e-3^2;
-    states(16,1) = 1;           cov(16,16) = 1e-3^2;
-    states(17,1) = 1;           cov(17,17) = 1e-3^2;
-    states(18,1) = 1;           cov(18,18) = 1e-3^2;
-    states(19,1) = 1;           cov(19,19) = 1e-3^2;
+    states(15,1) = 1;           cov(15,15) = 1e-1^2;
+    states(16,1) = 1;           cov(16,16) = 1e-1^2;
+    states(17,1) = 1;           cov(17,17) = 1e-1^2;
+    states(18,1) = 1;           cov(18,18) = 1e-1^2;
+    states(19,1) = 1;           cov(19,19) = 1e-1^2;
         
     prev_p = 0;
     prev_q = 0;
@@ -40,7 +40,9 @@ end
 
 %Define filter parameters:
 Q = (eye(19,19)*1e-3).^2;
-R = (eye(6,6)*1e-5).^2;
+R = eye(6);
+R(1:3,1:3) = R(1:3,1:3)*(1e-1).^2;
+R(4:6,4:6) = R(4:6,4:6)*(1e-1).^2;
 F = eye(19);
 R2D = 180/pi;
 
@@ -65,7 +67,7 @@ p      = states(4,1);
 q      = states(5,1);
 r      = states(6,1);
 
-states(7:end) = 1; 
+% states(7:end) = 1; 
 
 CX_dE  = states(7,1); 
 
