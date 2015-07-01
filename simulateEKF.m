@@ -53,6 +53,11 @@ if isempty(pStates)
     prevOmegaDots     = [0;0;0];
 end
 
+pCovarianceOUT  = zeros(30,1);
+pStatesOUT      = zeros(30,1);
+SCovOUT         = zeros(6,1); 
+innovation      = zeros(6,1);
+
 
 %*****Define Q and R matrices*****
 % Qcov = diag(1e-9*[0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2]);

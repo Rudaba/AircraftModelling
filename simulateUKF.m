@@ -50,7 +50,7 @@ if isempty(pStates)
     
     pCovariance       = diag(covDiag*1e-1);
     
-    prevOmegaDots     = [0;0;0];
+    prevOmegaDots     = zeros(3,2*30+1);
 end
 
 
@@ -93,6 +93,8 @@ dR          = u(3,1)*180/pi;
 
 throttle    = u(4,1);
 
+measurement = [accelerations;omega]; 
+
 %***Calculate Dynamic Pressure***
 qbar = 0.5*rho*Vt^2;
 
@@ -109,25 +111,30 @@ T = Tmax*throttle;
 
 
 %*****Extract States From Filter*****
-%Calculate sigma points
-kapa            = 0.1;
-na              = length(pStates); %length of states
-N               = size(R,1); %length of measurements
+%Calculate sigma points (UT taken from Beyond the Kalman filter)
+kappa           = 0.5;
+na              = size(pStates,1); %length of states
+N               = size(measurement,1);
+
 sigma           = zeros(na,2*na+1);
 sigma_meas      = zeros(N,2*na+1);
+W               = zeros(2*na+1,1);
+
 sigma(:,1)      = pStates;
-sigma_meas(:,1) = X_Filter(1:3);
-W               = zeros(1+2*na,1);
-W(1,1)          = kapa/(na+kapa);
+W(1,1)          = kappa /(na + kappa);
+
+matrixSQRT      = chol((na + kappa)*pCovariance);
 
 for i = 1:2*length(pStates)
-    eqn = chol((na+kapa)*pCovariance);
-    if i>=1 && i<= na
-        sigma(:,i+1) = pStates + eqn(i,:)';
+
+    if i >= 1 && i <= na
+        sigma(:,i+1) = pStates + matrixSQRT(i,:)';
     else
-        sigma(:,i+1) = pStates - eqn(i-na,:)';
+        sigma(:,i+1) = pStates - matrixSQRT(i-na,:)';
     end
-    W(i+1) = 1/(2*(na+kapa));
+    
+    W(i+1,1) = 1/(2*(na + kappa));
+        
 end
 
 %Time update for each sigma point
@@ -137,9 +144,9 @@ for i = 1:2*na+1
     q           = sigma(5,i);
     r           = sigma(6,i);
     
-    prev_pdot   = prevOmegaDots(1,1);
-    prev_qdot   = prevOmegaDots(2,1);
-    prev_rdot   = prevOmegaDots(3,1);
+    prev_pdot   = prevOmegaDots(1,i);
+    prev_qdot   = prevOmegaDots(2,i);
+    prev_rdot   = prevOmegaDots(3,i);
     
     CX_dE1_mp   = sigma(7,i);
     CX_dE2_mp   = sigma(8,i);
@@ -231,43 +238,22 @@ for i = 1:2*na+1
     sigma(4,i)    = p + dt*(prev_pdot+pdot)/2;
     sigma(5,i)    = q + dt*(prev_qdot+qdot)/2;
     sigma(6,i)    = r + dt*(prev_rdot+rdot)/2;
-    prevOmegaDots   = [pdot;qdot;rdot];
-end
-
-
-
-%Time update for each sigma point
-for i = 1:2*na+1
     
-    x   = sigma(1,i);
-    y   = sigma(2,i);
-    psi = sigma(3,i);
-    RR  = sigma(4,i);
-    RL  = sigma(5,i);
+    prevOmegaDots(:,i) = [pdot;qdot;rdot];
     
-    psiDot          = RR/(2*b)*omegaR - RL/(2*b)*omegaL;
-    sigma(3,i)      = psi + psiDot*dt;
-    
-    V               = RR/2*omegaR + RL/2*omegaL;
-    
-    xDot            =  V*cos(psi);
-    sigma(1,i)      = x + xDot*dt;
-    
-    
-    yDot            = V*sin(psi);
-    sigma(2,i)      = y + yDot*dt;
-    
-    %Measurement predictions
+    %Measurement Predictions
     sigma_meas(1,i) = sigma(1,i);
     sigma_meas(2,i) = sigma(2,i);
     sigma_meas(3,i) = sigma(3,i);
     
+    sigma_meas(4,i) = sigma(4,i);
+    sigma_meas(5,i) = sigma(5,i);
+    sigma_meas(6,i) = sigma(6,i);
 end
-
 
 %Predict states and Convariance forward
 pStates     = zeros(na,1);
-P           = zeros(na,na);
+pCovariance = zeros(na,na);
 ymeas       = zeros(N,1);
 
 for i = 1:2*na+1
@@ -275,10 +261,10 @@ for i = 1:2*na+1
 end
 
 for i = 1:2*na+1
-    P = P + W(i)*[sigma(:,i)-pStates]*[sigma(:,i)-pStates]';
+    pCovariance = pCovariance + W(i)*[sigma(:,i)-pStates]*[sigma(:,i)-pStates]';
 end
 
-P = P + Q;
+pCovariance = pCovariance + Qcov;
 
 for i = 1:2*na+1
     ymeas = ymeas + W(i)*sigma_meas(:,i);
@@ -293,9 +279,13 @@ for i = 1:2*na+1
     Pzz = Pzz + W(i)*[sigma_meas(:,i)-ymeas]*[sigma_meas(:,i)-ymeas]';
 end
 
-SCovOUT     = R_Noise + Pzz;
-k           = Pxz*inv(S);
+Scov        = Rcov + Pzz;
+k           = Pxz*inv(Scov);
 innovation  = measurement - ymeas;
 correction  = k*innovation;
-X_Filter    = X_Filter + correction;
-P           = P - k*S*k';
+pStates     = pStates + correction;
+pCovariance = pCovariance - k*Scov*k';
+
+SCovOUT         = diag(Scov); 
+pStatesOUT      = pStates;
+pCovarianceOUT  = diag(pCovariance);
