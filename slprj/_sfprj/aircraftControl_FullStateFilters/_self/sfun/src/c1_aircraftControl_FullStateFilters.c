@@ -19,11 +19,11 @@
 
 /* Variable Definitions */
 static real_T _sfTime_;
-static const char * c1_debug_family_names[14] = { "nargin", "nargout",
-  "filterModel", "accelerations", "omega", "ALP", "BET", "u", "Vt", "H",
-  "states_OUT", "cov_OUT", "innovation", "S" };
+static const char * c1_debug_family_names[13] = { "nargin", "nargout",
+  "accelerations", "omega", "ALP", "BET", "u", "Vt", "H", "states_OUT",
+  "cov_OUT", "innovation", "S" };
 
-static const char * c1_b_debug_family_names[120] = { "Qcov", "Rcov", "R2D", "g",
+static const char * c1_b_debug_family_names[123] = { "Qcov", "Rcov", "R2D", "g",
   "vs", "rho", "dt", "m", "Ix", "Iy", "Iz", "Ixz", "b", "cbar", "S", "xCG_ref",
   "xCG", "dA", "dE", "dR", "throttle", "qbar", "hT", "Tmax", "T", "p", "q", "r",
   "prev_pdot", "prev_qdot", "prev_rdot", "CX_dE1_mp", "CX_dE2_mp", "CY_dE1_mp",
@@ -35,10 +35,10 @@ static const char * c1_b_debug_family_names[120] = { "Qcov", "Rcov", "R2D", "g",
   "Cl_dR2", "Cl_dE1", "Cm_dE1", "Cm_dE2", "Cm_dE3", "Cm_dA1", "Cn_dA1", "Cn_dA2",
   "Cn_dE1", "Cn_dE2", "Cn_dR1", "Cn_dR2", "CX", "CY", "CZ", "Cl", "Cm", "Cn",
   "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "heng", "pdot", "qdot",
-  "rdot", "F", "H", "SCov", "k", "correction", "nargin", "nargout", "u", "Vt",
-  "ALP", "BET", "accelerations", "omega", "Height", "pStatesOUT",
-  "pCovarianceOUT", "innovation", "SCovOUT", "pStates", "pCovariance", "covDiag",
-  "prevOmegaDots" };
+  "rdot", "ax", "ay", "az", "F", "H", "SCov", "k", "correction", "nargin",
+  "nargout", "u", "Vt", "ALP", "BET", "accelerations", "omega", "Height",
+  "pStatesOUT", "pCovarianceOUT", "innovation", "SCovOUT", "pStates",
+  "pCovariance", "covDiag", "prevOmegaDots" };
 
 /* Function Declarations */
 static void initialize_c1_aircraftControl_FullStateFilters
@@ -588,8 +588,6 @@ static void sf_gateway_c1_aircraftControl_FullStateFilters
   real_T c1_b_hoistedGlobal;
   real_T c1_c_hoistedGlobal;
   real_T c1_d_hoistedGlobal;
-  real_T c1_e_hoistedGlobal;
-  real_T c1_filterModel;
   int32_T c1_i19;
   real_T c1_accelerations[3];
   int32_T c1_i20;
@@ -600,8 +598,8 @@ static void sf_gateway_c1_aircraftControl_FullStateFilters
   real_T c1_u[4];
   real_T c1_Vt;
   real_T c1_H;
-  uint32_T c1_debug_family_var_map[14];
-  real_T c1_nargin = 8.0;
+  uint32_T c1_debug_family_var_map[13];
+  real_T c1_nargin = 7.0;
   real_T c1_nargout = 4.0;
   real_T c1_states_OUT[30];
   real_T c1_cov_OUT[30];
@@ -629,7 +627,6 @@ static void sf_gateway_c1_aircraftControl_FullStateFilters
   int32_T c1_i34;
   int32_T c1_i35;
   int32_T c1_i36;
-  real_T *c1_b_filterModel;
   real_T *c1_b_ALP;
   real_T *c1_b_BET;
   real_T *c1_b_Vt;
@@ -643,42 +640,38 @@ static void sf_gateway_c1_aircraftControl_FullStateFilters
   real_T (*c1_c_accelerations)[3];
   c1_c_S = (real_T (*)[6])ssGetOutputPortSignal(chartInstance->S, 4);
   c1_c_innovation = (real_T (*)[6])ssGetOutputPortSignal(chartInstance->S, 3);
-  c1_b_H = (real_T *)ssGetInputPortSignal(chartInstance->S, 7);
+  c1_b_H = (real_T *)ssGetInputPortSignal(chartInstance->S, 6);
   c1_c_cov_OUT = (real_T (*)[30])ssGetOutputPortSignal(chartInstance->S, 2);
-  c1_b_Vt = (real_T *)ssGetInputPortSignal(chartInstance->S, 6);
+  c1_b_Vt = (real_T *)ssGetInputPortSignal(chartInstance->S, 5);
   c1_c_states_OUT = (real_T (*)[30])ssGetOutputPortSignal(chartInstance->S, 1);
-  c1_c_u = (real_T (*)[4])ssGetInputPortSignal(chartInstance->S, 5);
-  c1_b_BET = (real_T *)ssGetInputPortSignal(chartInstance->S, 4);
-  c1_b_ALP = (real_T *)ssGetInputPortSignal(chartInstance->S, 3);
-  c1_c_omega = (real_T (*)[3])ssGetInputPortSignal(chartInstance->S, 2);
-  c1_c_accelerations = (real_T (*)[3])ssGetInputPortSignal(chartInstance->S, 1);
-  c1_b_filterModel = (real_T *)ssGetInputPortSignal(chartInstance->S, 0);
+  c1_c_u = (real_T (*)[4])ssGetInputPortSignal(chartInstance->S, 4);
+  c1_b_BET = (real_T *)ssGetInputPortSignal(chartInstance->S, 3);
+  c1_b_ALP = (real_T *)ssGetInputPortSignal(chartInstance->S, 2);
+  c1_c_omega = (real_T (*)[3])ssGetInputPortSignal(chartInstance->S, 1);
+  c1_c_accelerations = (real_T (*)[3])ssGetInputPortSignal(chartInstance->S, 0);
   _SFD_SYMBOL_SCOPE_PUSH(0U, 0U);
   _sfTime_ = sf_get_time(chartInstance->S);
   _SFD_CC_CALL(CHART_ENTER_SFUNCTION_TAG, 0U, chartInstance->c1_sfEvent);
-  _SFD_DATA_RANGE_CHECK(*c1_b_filterModel, 0U);
   for (c1_i16 = 0; c1_i16 < 3; c1_i16++) {
-    _SFD_DATA_RANGE_CHECK((*c1_c_accelerations)[c1_i16], 1U);
+    _SFD_DATA_RANGE_CHECK((*c1_c_accelerations)[c1_i16], 0U);
   }
 
   for (c1_i17 = 0; c1_i17 < 3; c1_i17++) {
-    _SFD_DATA_RANGE_CHECK((*c1_c_omega)[c1_i17], 2U);
+    _SFD_DATA_RANGE_CHECK((*c1_c_omega)[c1_i17], 1U);
   }
 
-  _SFD_DATA_RANGE_CHECK(*c1_b_ALP, 3U);
-  _SFD_DATA_RANGE_CHECK(*c1_b_BET, 4U);
+  _SFD_DATA_RANGE_CHECK(*c1_b_ALP, 2U);
+  _SFD_DATA_RANGE_CHECK(*c1_b_BET, 3U);
   for (c1_i18 = 0; c1_i18 < 4; c1_i18++) {
-    _SFD_DATA_RANGE_CHECK((*c1_c_u)[c1_i18], 5U);
+    _SFD_DATA_RANGE_CHECK((*c1_c_u)[c1_i18], 4U);
   }
 
   chartInstance->c1_sfEvent = CALL_EVENT;
   _SFD_CC_CALL(CHART_ENTER_DURING_FUNCTION_TAG, 0U, chartInstance->c1_sfEvent);
-  c1_hoistedGlobal = *c1_b_filterModel;
-  c1_b_hoistedGlobal = *c1_b_ALP;
-  c1_c_hoistedGlobal = *c1_b_BET;
-  c1_d_hoistedGlobal = *c1_b_Vt;
-  c1_e_hoistedGlobal = *c1_b_H;
-  c1_filterModel = c1_hoistedGlobal;
+  c1_hoistedGlobal = *c1_b_ALP;
+  c1_b_hoistedGlobal = *c1_b_BET;
+  c1_c_hoistedGlobal = *c1_b_Vt;
+  c1_d_hoistedGlobal = *c1_b_H;
   for (c1_i19 = 0; c1_i19 < 3; c1_i19++) {
     c1_accelerations[c1_i19] = (*c1_c_accelerations)[c1_i19];
   }
@@ -687,38 +680,37 @@ static void sf_gateway_c1_aircraftControl_FullStateFilters
     c1_omega[c1_i20] = (*c1_c_omega)[c1_i20];
   }
 
-  c1_ALP = c1_b_hoistedGlobal;
-  c1_BET = c1_c_hoistedGlobal;
+  c1_ALP = c1_hoistedGlobal;
+  c1_BET = c1_b_hoistedGlobal;
   for (c1_i21 = 0; c1_i21 < 4; c1_i21++) {
     c1_u[c1_i21] = (*c1_c_u)[c1_i21];
   }
 
-  c1_Vt = c1_d_hoistedGlobal;
-  c1_H = c1_e_hoistedGlobal;
-  _SFD_SYMBOL_SCOPE_PUSH_EML(0U, 14U, 14U, c1_debug_family_names,
+  c1_Vt = c1_c_hoistedGlobal;
+  c1_H = c1_d_hoistedGlobal;
+  _SFD_SYMBOL_SCOPE_PUSH_EML(0U, 13U, 13U, c1_debug_family_names,
     c1_debug_family_var_map);
   _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_nargin, 0U, c1_c_sf_marshallOut,
     c1_c_sf_marshallIn);
   _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_nargout, 1U, c1_c_sf_marshallOut,
     c1_c_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML(&c1_filterModel, 2U, c1_c_sf_marshallOut);
-  _SFD_SYMBOL_SCOPE_ADD_EML(c1_accelerations, 3U, c1_e_sf_marshallOut);
-  _SFD_SYMBOL_SCOPE_ADD_EML(c1_omega, 4U, c1_e_sf_marshallOut);
-  _SFD_SYMBOL_SCOPE_ADD_EML(&c1_ALP, 5U, c1_c_sf_marshallOut);
-  _SFD_SYMBOL_SCOPE_ADD_EML(&c1_BET, 6U, c1_c_sf_marshallOut);
-  _SFD_SYMBOL_SCOPE_ADD_EML(c1_u, 7U, c1_d_sf_marshallOut);
-  _SFD_SYMBOL_SCOPE_ADD_EML(&c1_Vt, 8U, c1_c_sf_marshallOut);
-  _SFD_SYMBOL_SCOPE_ADD_EML(&c1_H, 9U, c1_c_sf_marshallOut);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_states_OUT, 10U, c1_b_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML(c1_accelerations, 2U, c1_e_sf_marshallOut);
+  _SFD_SYMBOL_SCOPE_ADD_EML(c1_omega, 3U, c1_e_sf_marshallOut);
+  _SFD_SYMBOL_SCOPE_ADD_EML(&c1_ALP, 4U, c1_c_sf_marshallOut);
+  _SFD_SYMBOL_SCOPE_ADD_EML(&c1_BET, 5U, c1_c_sf_marshallOut);
+  _SFD_SYMBOL_SCOPE_ADD_EML(c1_u, 6U, c1_d_sf_marshallOut);
+  _SFD_SYMBOL_SCOPE_ADD_EML(&c1_Vt, 7U, c1_c_sf_marshallOut);
+  _SFD_SYMBOL_SCOPE_ADD_EML(&c1_H, 8U, c1_c_sf_marshallOut);
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_states_OUT, 9U, c1_b_sf_marshallOut,
     c1_b_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_cov_OUT, 11U, c1_b_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_cov_OUT, 10U, c1_b_sf_marshallOut,
     c1_b_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_innovation, 12U, c1_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_innovation, 11U, c1_sf_marshallOut,
     c1_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_S, 13U, c1_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_S, 12U, c1_sf_marshallOut,
     c1_sf_marshallIn);
   CV_EML_FCN(0, 0);
-  _SFD_EML_CALL(0U, chartInstance->c1_sfEvent, 5);
+  _SFD_EML_CALL(0U, chartInstance->c1_sfEvent, 4);
   for (c1_i22 = 0; c1_i22 < 4; c1_i22++) {
     c1_b_u[c1_i22] = c1_u[c1_i22];
   }
@@ -750,7 +742,7 @@ static void sf_gateway_c1_aircraftControl_FullStateFilters
     c1_S[c1_i28] = c1_b_S[c1_i28];
   }
 
-  _SFD_EML_CALL(0U, chartInstance->c1_sfEvent, -5);
+  _SFD_EML_CALL(0U, chartInstance->c1_sfEvent, -4);
   _SFD_SYMBOL_SCOPE_POP();
   for (c1_i29 = 0; c1_i29 < 30; c1_i29++) {
     (*c1_c_states_OUT)[c1_i29] = c1_states_OUT[c1_i29];
@@ -774,21 +766,21 @@ static void sf_gateway_c1_aircraftControl_FullStateFilters
     (_aircraftControl_FullStateFiltersMachineNumber_, chartInstance->chartNumber,
      chartInstance->instanceNumber);
   for (c1_i33 = 0; c1_i33 < 30; c1_i33++) {
-    _SFD_DATA_RANGE_CHECK((*c1_c_states_OUT)[c1_i33], 6U);
+    _SFD_DATA_RANGE_CHECK((*c1_c_states_OUT)[c1_i33], 5U);
   }
 
-  _SFD_DATA_RANGE_CHECK(*c1_b_Vt, 7U);
+  _SFD_DATA_RANGE_CHECK(*c1_b_Vt, 6U);
   for (c1_i34 = 0; c1_i34 < 30; c1_i34++) {
-    _SFD_DATA_RANGE_CHECK((*c1_c_cov_OUT)[c1_i34], 8U);
+    _SFD_DATA_RANGE_CHECK((*c1_c_cov_OUT)[c1_i34], 7U);
   }
 
-  _SFD_DATA_RANGE_CHECK(*c1_b_H, 9U);
+  _SFD_DATA_RANGE_CHECK(*c1_b_H, 8U);
   for (c1_i35 = 0; c1_i35 < 6; c1_i35++) {
-    _SFD_DATA_RANGE_CHECK((*c1_c_innovation)[c1_i35], 10U);
+    _SFD_DATA_RANGE_CHECK((*c1_c_innovation)[c1_i35], 9U);
   }
 
   for (c1_i36 = 0; c1_i36 < 6; c1_i36++) {
-    _SFD_DATA_RANGE_CHECK((*c1_c_S)[c1_i36], 11U);
+    _SFD_DATA_RANGE_CHECK((*c1_c_S)[c1_i36], 10U);
   }
 }
 
@@ -804,7 +796,7 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   c1_pStatesOUT[30], real_T c1_pCovarianceOUT[30], real_T c1_innovation[6],
   real_T c1_SCovOUT[6])
 {
-  uint32_T c1_debug_family_var_map[120];
+  uint32_T c1_debug_family_var_map[123];
   real_T c1_Qcov[900];
   real_T c1_Rcov[36];
   real_T c1_R2D;
@@ -903,6 +895,9 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   real_T c1_pdot;
   real_T c1_qdot;
   real_T c1_rdot;
+  real_T c1_ax;
+  real_T c1_ay;
+  real_T c1_az;
   real_T c1_F[900];
   real_T c1_H[180];
   real_T c1_SCov[36];
@@ -928,67 +923,67 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   int32_T c1_i48;
   int32_T c1_i49;
   int32_T c1_i50;
-  static real_T c1_dv9[900] = { 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  static real_T c1_dv9[900] = { 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.1 };
+    0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.01 };
 
   real_T c1_dv10[900];
   real_T c1_dv11[900];
@@ -1113,220 +1108,217 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   real_T c1_ec_x;
   real_T c1_fc_x;
   real_T c1_gc_x;
-  real_T c1_jb_y;
   real_T c1_t_A;
   real_T c1_hc_x;
   real_T c1_ic_x;
   real_T c1_jc_x;
-  real_T c1_kb_y;
   real_T c1_u_A;
   real_T c1_kc_x;
   real_T c1_lc_x;
   real_T c1_mc_x;
-  real_T c1_lb_y;
   real_T c1_v_A;
   real_T c1_nc_x;
   real_T c1_oc_x;
   real_T c1_pc_x;
-  real_T c1_mb_y;
+  real_T c1_jb_y;
   real_T c1_w_A;
   real_T c1_qc_x;
   real_T c1_rc_x;
   real_T c1_sc_x;
-  real_T c1_nb_y;
+  real_T c1_kb_y;
   real_T c1_x_A;
   real_T c1_tc_x;
   real_T c1_uc_x;
   real_T c1_vc_x;
-  real_T c1_ob_y;
+  real_T c1_lb_y;
   real_T c1_dv14[900];
   int32_T c1_i54;
   real_T c1_y_A;
   real_T c1_g_B;
   real_T c1_wc_x;
-  real_T c1_pb_y;
+  real_T c1_mb_y;
   real_T c1_xc_x;
-  real_T c1_qb_y;
+  real_T c1_nb_y;
   real_T c1_yc_x;
-  real_T c1_rb_y;
-  real_T c1_sb_y;
+  real_T c1_ob_y;
+  real_T c1_pb_y;
   real_T c1_ab_A;
   real_T c1_h_B;
   real_T c1_ad_x;
-  real_T c1_tb_y;
+  real_T c1_qb_y;
   real_T c1_bd_x;
-  real_T c1_ub_y;
+  real_T c1_rb_y;
   real_T c1_cd_x;
-  real_T c1_vb_y;
-  real_T c1_wb_y;
+  real_T c1_sb_y;
+  real_T c1_tb_y;
   real_T c1_bb_A;
   real_T c1_i_B;
   real_T c1_dd_x;
-  real_T c1_xb_y;
+  real_T c1_ub_y;
   real_T c1_ed_x;
-  real_T c1_yb_y;
+  real_T c1_vb_y;
   real_T c1_fd_x;
-  real_T c1_ac_y;
-  real_T c1_bc_y;
+  real_T c1_wb_y;
+  real_T c1_xb_y;
   real_T c1_cb_A;
   real_T c1_j_B;
   real_T c1_gd_x;
-  real_T c1_cc_y;
+  real_T c1_yb_y;
   real_T c1_hd_x;
-  real_T c1_dc_y;
+  real_T c1_ac_y;
   real_T c1_id_x;
-  real_T c1_ec_y;
-  real_T c1_fc_y;
+  real_T c1_bc_y;
+  real_T c1_cc_y;
   real_T c1_db_A;
   real_T c1_k_B;
   real_T c1_jd_x;
-  real_T c1_gc_y;
+  real_T c1_dc_y;
   real_T c1_kd_x;
-  real_T c1_hc_y;
+  real_T c1_ec_y;
   real_T c1_ld_x;
-  real_T c1_ic_y;
-  real_T c1_jc_y;
+  real_T c1_fc_y;
+  real_T c1_gc_y;
   real_T c1_eb_A;
   real_T c1_l_B;
   real_T c1_md_x;
-  real_T c1_kc_y;
+  real_T c1_hc_y;
   real_T c1_nd_x;
-  real_T c1_lc_y;
+  real_T c1_ic_y;
   real_T c1_od_x;
-  real_T c1_mc_y;
-  real_T c1_nc_y;
+  real_T c1_jc_y;
+  real_T c1_kc_y;
   real_T c1_fb_A;
   real_T c1_m_B;
   real_T c1_pd_x;
-  real_T c1_oc_y;
+  real_T c1_lc_y;
   real_T c1_qd_x;
-  real_T c1_pc_y;
+  real_T c1_mc_y;
   real_T c1_rd_x;
-  real_T c1_qc_y;
-  real_T c1_rc_y;
+  real_T c1_nc_y;
+  real_T c1_oc_y;
   real_T c1_gb_A;
   real_T c1_n_B;
   real_T c1_sd_x;
-  real_T c1_sc_y;
+  real_T c1_pc_y;
   real_T c1_td_x;
-  real_T c1_tc_y;
+  real_T c1_qc_y;
   real_T c1_ud_x;
-  real_T c1_uc_y;
-  real_T c1_vc_y;
+  real_T c1_rc_y;
+  real_T c1_sc_y;
   real_T c1_hb_A;
   real_T c1_o_B;
   real_T c1_vd_x;
-  real_T c1_wc_y;
+  real_T c1_tc_y;
   real_T c1_wd_x;
-  real_T c1_xc_y;
+  real_T c1_uc_y;
   real_T c1_xd_x;
-  real_T c1_yc_y;
-  real_T c1_ad_y;
+  real_T c1_vc_y;
+  real_T c1_wc_y;
   real_T c1_ib_A;
   real_T c1_p_B;
   real_T c1_yd_x;
-  real_T c1_bd_y;
+  real_T c1_xc_y;
   real_T c1_ae_x;
-  real_T c1_cd_y;
+  real_T c1_yc_y;
   real_T c1_be_x;
-  real_T c1_dd_y;
-  real_T c1_ed_y;
+  real_T c1_ad_y;
+  real_T c1_bd_y;
   real_T c1_jb_A;
   real_T c1_q_B;
   real_T c1_ce_x;
-  real_T c1_fd_y;
+  real_T c1_cd_y;
   real_T c1_de_x;
-  real_T c1_gd_y;
+  real_T c1_dd_y;
   real_T c1_ee_x;
-  real_T c1_hd_y;
-  real_T c1_id_y;
+  real_T c1_ed_y;
+  real_T c1_fd_y;
   real_T c1_kb_A;
   real_T c1_r_B;
   real_T c1_fe_x;
-  real_T c1_jd_y;
+  real_T c1_gd_y;
   real_T c1_ge_x;
-  real_T c1_kd_y;
+  real_T c1_hd_y;
   real_T c1_he_x;
-  real_T c1_ld_y;
-  real_T c1_md_y;
+  real_T c1_id_y;
+  real_T c1_jd_y;
   real_T c1_lb_A;
   real_T c1_s_B;
   real_T c1_ie_x;
-  real_T c1_nd_y;
+  real_T c1_kd_y;
   real_T c1_je_x;
-  real_T c1_od_y;
+  real_T c1_ld_y;
   real_T c1_ke_x;
-  real_T c1_pd_y;
-  real_T c1_qd_y;
+  real_T c1_md_y;
+  real_T c1_nd_y;
   real_T c1_mb_A;
   real_T c1_t_B;
   real_T c1_le_x;
-  real_T c1_rd_y;
+  real_T c1_od_y;
   real_T c1_me_x;
-  real_T c1_sd_y;
+  real_T c1_pd_y;
   real_T c1_ne_x;
-  real_T c1_td_y;
-  real_T c1_ud_y;
+  real_T c1_qd_y;
+  real_T c1_rd_y;
   real_T c1_nb_A;
   real_T c1_u_B;
   real_T c1_oe_x;
-  real_T c1_vd_y;
+  real_T c1_sd_y;
   real_T c1_pe_x;
-  real_T c1_wd_y;
+  real_T c1_td_y;
   real_T c1_qe_x;
-  real_T c1_xd_y;
-  real_T c1_yd_y;
+  real_T c1_ud_y;
+  real_T c1_vd_y;
   real_T c1_ob_A;
   real_T c1_v_B;
   real_T c1_re_x;
-  real_T c1_ae_y;
+  real_T c1_wd_y;
   real_T c1_se_x;
-  real_T c1_be_y;
+  real_T c1_xd_y;
   real_T c1_te_x;
-  real_T c1_ce_y;
-  real_T c1_de_y;
+  real_T c1_yd_y;
+  real_T c1_ae_y;
   real_T c1_pb_A;
   real_T c1_w_B;
   real_T c1_ue_x;
-  real_T c1_ee_y;
+  real_T c1_be_y;
   real_T c1_ve_x;
-  real_T c1_fe_y;
+  real_T c1_ce_y;
   real_T c1_we_x;
-  real_T c1_ge_y;
-  real_T c1_he_y;
+  real_T c1_de_y;
+  real_T c1_ee_y;
   real_T c1_qb_A;
   real_T c1_x_B;
   real_T c1_xe_x;
-  real_T c1_ie_y;
+  real_T c1_fe_y;
   real_T c1_ye_x;
-  real_T c1_je_y;
+  real_T c1_ge_y;
   real_T c1_af_x;
-  real_T c1_ke_y;
-  real_T c1_le_y;
+  real_T c1_he_y;
+  real_T c1_ie_y;
   real_T c1_rb_A;
   real_T c1_y_B;
   real_T c1_bf_x;
-  real_T c1_me_y;
+  real_T c1_je_y;
   real_T c1_cf_x;
-  real_T c1_ne_y;
+  real_T c1_ke_y;
   real_T c1_df_x;
-  real_T c1_oe_y;
-  real_T c1_pe_y;
+  real_T c1_le_y;
+  real_T c1_me_y;
   real_T c1_sb_A;
   real_T c1_ab_B;
   real_T c1_ef_x;
-  real_T c1_qe_y;
+  real_T c1_ne_y;
   real_T c1_ff_x;
-  real_T c1_re_y;
+  real_T c1_oe_y;
   real_T c1_gf_x;
-  real_T c1_se_y;
-  real_T c1_te_y;
+  real_T c1_pe_y;
+  real_T c1_qe_y;
   int32_T c1_i55;
   real_T c1_c_hoistedGlobal[900];
   int32_T c1_i56;
   real_T c1_a[900];
   int32_T c1_i57;
-  real_T c1_ue_y[900];
+  real_T c1_re_y[900];
   int32_T c1_i58;
   real_T c1_b_a[900];
   int32_T c1_i59;
@@ -1336,9 +1328,9 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   int32_T c1_i62;
   int32_T c1_i63;
   int32_T c1_i64;
-  real_T c1_ve_y[900];
+  real_T c1_se_y[900];
   int32_T c1_i65;
-  real_T c1_we_y[900];
+  real_T c1_te_y[900];
   int32_T c1_i66;
   real_T c1_c_a[900];
   int32_T c1_i67;
@@ -1363,15 +1355,15 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   int32_T c1_i71;
   int32_T c1_i72;
   int32_T c1_i73;
-  real_T c1_xe_y[180];
+  real_T c1_ue_y[180];
   int32_T c1_i74;
   real_T c1_e_a[180];
   int32_T c1_i75;
   real_T c1_e_hoistedGlobal[900];
   int32_T c1_i76;
-  real_T c1_ye_y[36];
+  real_T c1_ve_y[36];
   int32_T c1_i77;
-  real_T c1_af_y[180];
+  real_T c1_we_y[180];
   int32_T c1_i78;
   static real_T c1_b_b[180] = { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -1391,7 +1383,7 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   int32_T c1_i79;
   int32_T c1_i80;
   int32_T c1_i81;
-  real_T c1_bf_y[180];
+  real_T c1_xe_y[180];
   int32_T c1_i82;
   real_T c1_f_hoistedGlobal[900];
   int32_T c1_i83;
@@ -1425,13 +1417,13 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   int32_T c1_i104;
   int32_T c1_i105;
   int32_T c1_i106;
-  real_T c1_cf_y[180];
+  real_T c1_ye_y[180];
   int32_T c1_i107;
   real_T c1_f_a[180];
   int32_T c1_i108;
   int32_T c1_i109;
   int32_T c1_i110;
-  real_T c1_df_y[900];
+  real_T c1_af_y[900];
   int32_T c1_i111;
   real_T c1_g_a[900];
   int32_T c1_i112;
@@ -1444,7 +1436,7 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   real_T c1_c_SCov[36];
   real_T c1_dv21[6];
   int32_T c1_i117;
-  _SFD_SYMBOL_SCOPE_PUSH_EML(0U, 120U, 120U, c1_b_debug_family_names,
+  _SFD_SYMBOL_SCOPE_PUSH_EML(0U, 123U, 123U, c1_b_debug_family_names,
     c1_debug_family_var_map);
   _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_Qcov, 0U, c1_m_sf_marshallOut,
     c1_l_sf_marshallIn);
@@ -1620,48 +1612,54 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
     c1_c_sf_marshallIn);
   _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_rdot, 97U, c1_c_sf_marshallOut,
     c1_c_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_F, 98U, c1_m_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_ax, 98U, c1_c_sf_marshallOut,
+    c1_c_sf_marshallIn);
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_ay, 99U, c1_c_sf_marshallOut,
+    c1_c_sf_marshallIn);
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_az, 100U, c1_c_sf_marshallOut,
+    c1_c_sf_marshallIn);
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_F, 101U, c1_m_sf_marshallOut,
     c1_l_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML(c1_H, 99U, c1_l_sf_marshallOut);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_SCov, 100U, c1_k_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML(c1_H, 102U, c1_l_sf_marshallOut);
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_SCov, 103U, c1_k_sf_marshallOut,
     c1_k_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_k, 101U, c1_j_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_k, 104U, c1_j_sf_marshallOut,
     c1_j_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_correction, 102U, c1_b_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_correction, 105U, c1_b_sf_marshallOut,
     c1_b_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_nargin, 103U, c1_c_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_nargin, 106U, c1_c_sf_marshallOut,
     c1_c_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_nargout, 104U, c1_c_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_nargout, 107U, c1_c_sf_marshallOut,
     c1_c_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_u, 105U, c1_d_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_u, 108U, c1_d_sf_marshallOut,
     c1_i_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_Vt, 106U, c1_c_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_Vt, 109U, c1_c_sf_marshallOut,
     c1_c_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_ALP, 107U, c1_c_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_ALP, 110U, c1_c_sf_marshallOut,
     c1_c_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_BET, 108U, c1_c_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_BET, 111U, c1_c_sf_marshallOut,
     c1_c_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_accelerations, 109U,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_accelerations, 112U,
     c1_e_sf_marshallOut, c1_h_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_omega, 110U, c1_e_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_omega, 113U, c1_e_sf_marshallOut,
     c1_h_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_Height, 111U, c1_c_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(&c1_Height, 114U, c1_c_sf_marshallOut,
     c1_c_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_pStatesOUT, 112U, c1_b_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_pStatesOUT, 115U, c1_b_sf_marshallOut,
     c1_b_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_pCovarianceOUT, 113U,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_pCovarianceOUT, 116U,
     c1_b_sf_marshallOut, c1_b_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_innovation, 114U, c1_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_innovation, 117U, c1_sf_marshallOut,
     c1_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_SCovOUT, 115U, c1_sf_marshallOut,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(c1_SCovOUT, 118U, c1_sf_marshallOut,
     c1_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(chartInstance->c1_pStates, 116U,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(chartInstance->c1_pStates, 119U,
     c1_i_sf_marshallOut, c1_g_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(chartInstance->c1_pCovariance, 117U,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(chartInstance->c1_pCovariance, 120U,
     c1_h_sf_marshallOut, c1_f_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(chartInstance->c1_covDiag, 118U,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(chartInstance->c1_covDiag, 121U,
     c1_g_sf_marshallOut, c1_e_sf_marshallIn);
-  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(chartInstance->c1_prevOmegaDots, 119U,
+  _SFD_SYMBOL_SCOPE_ADD_EML_IMPORTABLE(chartInstance->c1_prevOmegaDots, 122U,
     c1_f_sf_marshallOut, c1_d_sf_marshallIn);
   CV_SCRIPT_FCN(0, 0);
   _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 4);
@@ -2248,353 +2246,362 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   c1_ec_x = c1_s_A;
   c1_fc_x = c1_ec_x;
   c1_gc_x = c1_fc_x;
-  c1_jb_y = c1_gc_x / 1177.0410005333333;
-  chartInstance->c1_pStates[0] = c1_jb_y;
+  c1_ax = c1_gc_x / 1177.0410005333333;
   _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 208U);
   c1_t_A = c1_qbar * 20.0 * c1_CY;
   c1_hc_x = c1_t_A;
   c1_ic_x = c1_hc_x;
   c1_jc_x = c1_ic_x;
-  c1_kb_y = c1_jc_x / 1177.0410005333333;
-  chartInstance->c1_pStates[1] = c1_kb_y;
+  c1_ay = c1_jc_x / 1177.0410005333333;
   _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 209U);
   c1_u_A = c1_qbar * 20.0 * c1_CZ;
   c1_kc_x = c1_u_A;
   c1_lc_x = c1_kc_x;
   c1_mc_x = c1_lc_x;
-  c1_lb_y = c1_mc_x / 1177.0410005333333;
-  chartInstance->c1_pStates[2] = c1_lb_y;
+  c1_az = c1_mc_x / 1177.0410005333333;
   _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 213U);
   c1_v_A = 0.005 * (c1_prev_pdot + c1_pdot);
   c1_nc_x = c1_v_A;
   c1_oc_x = c1_nc_x;
   c1_pc_x = c1_oc_x;
-  c1_mb_y = c1_pc_x / 2.0;
-  chartInstance->c1_pStates[3] = c1_p + c1_mb_y;
+  c1_jb_y = c1_pc_x / 2.0;
+  c1_p += c1_jb_y;
   _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 214U);
   c1_w_A = 0.005 * (c1_prev_qdot + c1_qdot);
   c1_qc_x = c1_w_A;
   c1_rc_x = c1_qc_x;
   c1_sc_x = c1_rc_x;
-  c1_nb_y = c1_sc_x / 2.0;
-  chartInstance->c1_pStates[4] = c1_q + c1_nb_y;
+  c1_kb_y = c1_sc_x / 2.0;
+  c1_q += c1_kb_y;
   _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 215U);
   c1_x_A = 0.005 * (c1_prev_rdot + c1_rdot);
   c1_tc_x = c1_x_A;
   c1_uc_x = c1_tc_x;
   c1_vc_x = c1_uc_x;
-  c1_ob_y = c1_vc_x / 2.0;
-  chartInstance->c1_pStates[5] = c1_r + c1_ob_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 216U);
+  c1_lb_y = c1_vc_x / 2.0;
+  c1_r += c1_lb_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 217U);
   chartInstance->c1_prevOmegaDots[0] = c1_pdot;
   chartInstance->c1_prevOmegaDots[1] = c1_qdot;
   chartInstance->c1_prevOmegaDots[2] = c1_rdot;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 218U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 221U);
+  chartInstance->c1_pStates[0] = c1_ax;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 222U);
+  chartInstance->c1_pStates[1] = c1_ay;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 223U);
+  chartInstance->c1_pStates[2] = c1_az;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 225U);
+  chartInstance->c1_pStates[3] = c1_p;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 226U);
+  chartInstance->c1_pStates[4] = c1_q;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 227U);
+  chartInstance->c1_pStates[5] = c1_r;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 229U);
   c1_eye(chartInstance, c1_dv14);
   for (c1_i54 = 0; c1_i54 < 900; c1_i54++) {
     c1_F[c1_i54] = c1_dv14[c1_i54];
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 220U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 231U);
   c1_y_A = 1.4603343338198285 * c1_qbar * ((-0.000175 * c1_mpower(chartInstance,
     c1_ALP) + 0.001 * c1_ALP) + 0.00873);
   c1_g_B = c1_Vt;
   c1_wc_x = c1_y_A;
-  c1_pb_y = c1_g_B;
+  c1_mb_y = c1_g_B;
   c1_xc_x = c1_wc_x;
-  c1_qb_y = c1_pb_y;
+  c1_nb_y = c1_mb_y;
   c1_yc_x = c1_xc_x;
-  c1_rb_y = c1_qb_y;
-  c1_sb_y = c1_yc_x / c1_rb_y;
-  c1_F[120] = c1_sb_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 221U);
+  c1_ob_y = c1_nb_y;
+  c1_pb_y = c1_yc_x / c1_ob_y;
+  c1_F[120] = c1_pb_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 232U);
   c1_F[180] = 0.016991761536715992 * c1_dE * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 222U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 233U);
   c1_F[210] = -0.016991761536715992 * c1_mpower(chartInstance, c1_BET) * c1_dE *
     c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 224U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 235U);
   c1_ab_A = 0.0073016716690991424 * c1_qbar;
   c1_h_B = c1_Vt;
   c1_ad_x = c1_ab_A;
-  c1_tb_y = c1_h_B;
+  c1_qb_y = c1_h_B;
   c1_bd_x = c1_ad_x;
-  c1_ub_y = c1_tb_y;
+  c1_rb_y = c1_qb_y;
   c1_cd_x = c1_bd_x;
-  c1_vb_y = c1_ub_y;
-  c1_wb_y = c1_cd_x / c1_vb_y;
-  c1_F[91] = c1_wb_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 225U);
+  c1_sb_y = c1_rb_y;
+  c1_tb_y = c1_cd_x / c1_sb_y;
+  c1_F[91] = c1_tb_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 236U);
   c1_bb_A = 3.2451874084885075 * c1_qbar * ((c1_CY_dE1 * c1_dE - 0.000367 *
     c1_ALP) + 0.0117);
   c1_i_B = c1_Vt;
   c1_dd_x = c1_bb_A;
-  c1_xb_y = c1_i_B;
+  c1_ub_y = c1_i_B;
   c1_ed_x = c1_dd_x;
-  c1_yb_y = c1_xb_y;
+  c1_vb_y = c1_ub_y;
   c1_fd_x = c1_ed_x;
-  c1_ac_y = c1_yb_y;
-  c1_bc_y = c1_fd_x / c1_ac_y;
-  c1_F[151] = c1_bc_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 226U);
+  c1_wb_y = c1_vb_y;
+  c1_xb_y = c1_fd_x / c1_wb_y;
+  c1_F[151] = c1_xb_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 237U);
   c1_F[241] = 0.016991761536715992 * c1_dR * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 227U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 238U);
   c1_F[271] = -0.016991761536715992 * c1_ALP * c1_dR * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 228U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 239U);
   c1_cb_A = 3.2451874084885075 * c1_dE * c1_qbar * c1_r;
   c1_j_B = c1_Vt;
   c1_gd_x = c1_cb_A;
-  c1_cc_y = c1_j_B;
+  c1_yb_y = c1_j_B;
   c1_hd_x = c1_gd_x;
-  c1_dc_y = c1_cc_y;
+  c1_ac_y = c1_yb_y;
   c1_id_x = c1_hd_x;
-  c1_ec_y = c1_dc_y;
-  c1_fc_y = c1_id_x / c1_ec_y;
-  c1_F[301] = c1_fc_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 230U);
+  c1_bc_y = c1_ac_y;
+  c1_cc_y = c1_id_x / c1_bc_y;
+  c1_F[301] = c1_cc_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 241U);
   c1_db_A = -(1.4603343338198285 * c1_qbar * ((0.0011 * c1_mpower(chartInstance,
     c1_ALP) - 0.00517 * c1_ALP) + 0.111));
   c1_k_B = c1_Vt;
   c1_jd_x = c1_db_A;
-  c1_gc_y = c1_k_B;
+  c1_dc_y = c1_k_B;
   c1_kd_x = c1_jd_x;
-  c1_hc_y = c1_gc_y;
+  c1_ec_y = c1_dc_y;
   c1_ld_x = c1_kd_x;
-  c1_ic_y = c1_hc_y;
-  c1_jc_y = c1_ld_x / c1_ic_y;
-  c1_F[122] = c1_jc_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 231U);
+  c1_fc_y = c1_ec_y;
+  c1_gc_y = c1_ld_x / c1_fc_y;
+  c1_F[122] = c1_gc_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 242U);
   c1_F[332] = -0.016991761536715992 * c1_dE * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 232U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 243U);
   c1_F[362] = -0.016991761536715992 * c1_ALP * c1_dE * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 233U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 244U);
   c1_F[392] = -0.016991761536715992 * c1_mpower(chartInstance, c1_dA) * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 235U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 246U);
   c1_eb_A = 0.084653457277151636 * ((-4.36E-5 * c1_mpower(chartInstance, c1_ALP)
     + 0.000524 * c1_ALP) + 0.00412);
   c1_l_B = c1_Vt;
   c1_md_x = c1_eb_A;
-  c1_kc_y = c1_l_B;
+  c1_hc_y = c1_l_B;
   c1_nd_x = c1_md_x;
-  c1_lc_y = c1_kc_y;
+  c1_ic_y = c1_hc_y;
   c1_od_x = c1_nd_x;
-  c1_mc_y = c1_lc_y;
-  c1_nc_y = c1_od_x / c1_mc_y;
+  c1_jc_y = c1_ic_y;
+  c1_kc_y = c1_od_x / c1_jc_y;
   c1_fb_A = 0.000711500803295087 * ((-5.06E-6 * c1_mpower(chartInstance, c1_ALP)
     + 1.92E-5 * c1_ALP) + 6.63E-5);
   c1_m_B = c1_Vt;
   c1_pd_x = c1_fb_A;
-  c1_oc_y = c1_m_B;
+  c1_lc_y = c1_m_B;
   c1_qd_x = c1_pd_x;
-  c1_pc_y = c1_oc_y;
+  c1_mc_y = c1_lc_y;
   c1_rd_x = c1_qd_x;
-  c1_qc_y = c1_pc_y;
-  c1_rc_y = c1_rd_x / c1_qc_y;
+  c1_nc_y = c1_mc_y;
+  c1_oc_y = c1_rd_x / c1_nc_y;
   c1_F[93] = 0.0025 * (0.014338034095370216 * c1_q - 133.33333333333334 *
-                       c1_qbar * (c1_nc_y + c1_rc_y)) + 1.0;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 236U);
+                       c1_qbar * (c1_kc_y + c1_oc_y)) + 1.0;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 247U);
   c1_F[123] = 0.0025 * (0.014338034095370216 * c1_p - 0.70592099279383547 * c1_r);
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 237U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 248U);
   c1_gb_A = 0.000711500803295087 * ((c1_Cn_dE1 * c1_dE - c1_ALP * c1_Cn_dE2 *
     c1_dE) + 0.00606);
   c1_n_B = c1_Vt;
   c1_sd_x = c1_gb_A;
-  c1_sc_y = c1_n_B;
+  c1_pc_y = c1_n_B;
   c1_td_x = c1_sd_x;
-  c1_tc_y = c1_sc_y;
+  c1_qc_y = c1_pc_y;
   c1_ud_x = c1_td_x;
-  c1_uc_y = c1_tc_y;
-  c1_vc_y = c1_ud_x / c1_uc_y;
+  c1_rc_y = c1_qc_y;
+  c1_sc_y = c1_ud_x / c1_rc_y;
   c1_hb_A = 0.084653457277151636 * ((0.000105 * c1_ALP + c1_Cl_dE1 * c1_dE) +
     0.000436);
   c1_o_B = c1_Vt;
   c1_vd_x = c1_hb_A;
-  c1_wc_y = c1_o_B;
+  c1_tc_y = c1_o_B;
   c1_wd_x = c1_vd_x;
-  c1_xc_y = c1_wc_y;
+  c1_uc_y = c1_tc_y;
   c1_xd_x = c1_wd_x;
-  c1_yc_y = c1_xc_y;
-  c1_ad_y = c1_xd_x / c1_yc_y;
+  c1_vc_y = c1_uc_y;
+  c1_wc_y = c1_xd_x / c1_vc_y;
   c1_F[153] = -0.0025 * (0.70592099279383547 * c1_q + 133.33333333333334 *
-    c1_qbar * (c1_vc_y - c1_ad_y));
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 238U);
+    c1_qbar * (c1_sc_y - c1_wc_y));
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 249U);
   c1_F[423] = -0.029549631053653 * c1_dA * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 239U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 250U);
   c1_F[453] = -0.029549631053653 * c1_ALP * c1_dA * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 240U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 251U);
   c1_F[483] = 0.029549631053653 * c1_mpower(chartInstance, c1_ALP) * c1_dA *
     0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 241U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 252U);
   c1_F[513] = -0.029549631053653 * c1_dR * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 242U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 253U);
   c1_F[543] = -0.029549631053653 * c1_ALP * c1_dR * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 243U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 254U);
   c1_ib_A = 5.6435638184767756 * c1_dE * 0.005 * c1_qbar * c1_r;
   c1_p_B = c1_Vt;
   c1_yd_x = c1_ib_A;
-  c1_bd_y = c1_p_B;
+  c1_xc_y = c1_p_B;
   c1_ae_x = c1_yd_x;
-  c1_cd_y = c1_bd_y;
+  c1_yc_y = c1_xc_y;
   c1_be_x = c1_ae_x;
-  c1_dd_y = c1_cd_y;
-  c1_ed_y = c1_be_x / c1_dd_y;
-  c1_F[573] = c1_ed_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 244U);
+  c1_ad_y = c1_yc_y;
+  c1_bd_y = c1_be_x / c1_ad_y;
+  c1_F[573] = c1_bd_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, MAX_uint8_T);
   c1_F[723] = 0.00024836063296167579 * c1_dA * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 245U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 256);
   c1_F[753] = 0.00024836063296167579 * c1_ALP * c1_dA * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 246U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 257);
   c1_F[783] = -0.00024836063296167579 * c1_dR * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 247U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 258);
   c1_F[813] = 0.00024836063296167579 * c1_ALP * c1_dR * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 248U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 259);
   c1_jb_A = -(0.047433386886339135 * c1_dE * 0.005 * c1_qbar * c1_r);
   c1_q_B = c1_Vt;
   c1_ce_x = c1_jb_A;
-  c1_fd_y = c1_q_B;
+  c1_cd_y = c1_q_B;
   c1_de_x = c1_ce_x;
-  c1_gd_y = c1_fd_y;
+  c1_dd_y = c1_cd_y;
   c1_ee_x = c1_de_x;
-  c1_hd_y = c1_gd_y;
-  c1_id_y = c1_ee_x / c1_hd_y;
-  c1_F[843] = c1_id_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 249U);
+  c1_ed_y = c1_dd_y;
+  c1_fd_y = c1_ee_x / c1_ed_y;
+  c1_F[843] = c1_fd_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 260);
   c1_kb_A = 0.047433386886339135 * c1_ALP * c1_dE * 0.005 * c1_qbar * c1_r;
   c1_r_B = c1_Vt;
   c1_fe_x = c1_kb_A;
-  c1_jd_y = c1_r_B;
+  c1_gd_y = c1_r_B;
   c1_ge_x = c1_fe_x;
-  c1_kd_y = c1_jd_y;
+  c1_hd_y = c1_gd_y;
   c1_he_x = c1_ge_x;
-  c1_ld_y = c1_kd_y;
-  c1_md_y = c1_he_x / c1_ld_y;
-  c1_F[873] = c1_md_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 251U);
+  c1_id_y = c1_hd_y;
+  c1_jd_y = c1_he_x / c1_id_y;
+  c1_F[873] = c1_jd_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 262);
   c1_F[94] = -0.0025 * (0.019232343072264506 * c1_p - 0.93976593829282262 * c1_r);
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 252U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 263);
   c1_lb_A = 0.0011672383582678274 * c1_qbar * (0.00157 * c1_ALP + 0.0473);
   c1_s_B = c1_Vt;
   c1_ie_x = c1_lb_A;
-  c1_nd_y = c1_s_B;
+  c1_kd_y = c1_s_B;
   c1_je_x = c1_ie_x;
-  c1_od_y = c1_nd_y;
+  c1_ld_y = c1_kd_y;
   c1_ke_x = c1_je_x;
-  c1_pd_y = c1_od_y;
-  c1_qd_y = c1_ke_x / c1_pd_y;
-  c1_F[124] = 1.0 - c1_qd_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 253U);
+  c1_md_y = c1_ld_y;
+  c1_nd_y = c1_ke_x / c1_md_y;
+  c1_F[124] = 1.0 - c1_nd_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 264);
   c1_F[154] = 0.0025 * (0.93976593829282262 * c1_p + 0.019232343072264506 * c1_r);
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 254U);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 265);
   c1_F[604] = -0.0027162870009795688 * c1_dE * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, MAX_uint8_T);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 266);
   c1_F[634] = -0.0027162870009795688 * c1_ALP * c1_dE * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 256);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 267);
   c1_F[664] = 0.0027162870009795688 * c1_mpower(chartInstance, c1_BET) * c1_dE *
     0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 257);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 268);
   c1_F[694] = -0.0027162870009795688 * c1_mpower(chartInstance, c1_dA) * 0.005 *
     c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 259);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 270);
   c1_mb_A = 0.000711500803295087 * ((-4.36E-5 * c1_mpower(chartInstance, c1_ALP)
     + 0.000524 * c1_ALP) + 0.00412);
   c1_t_B = c1_Vt;
   c1_le_x = c1_mb_A;
-  c1_rd_y = c1_t_B;
+  c1_od_y = c1_t_B;
   c1_me_x = c1_le_x;
-  c1_sd_y = c1_rd_y;
+  c1_pd_y = c1_od_y;
   c1_ne_x = c1_me_x;
-  c1_td_y = c1_sd_y;
-  c1_ud_y = c1_ne_x / c1_td_y;
+  c1_qd_y = c1_pd_y;
+  c1_rd_y = c1_ne_x / c1_qd_y;
   c1_nb_A = 0.015120148985768788 * ((-5.06E-6 * c1_mpower(chartInstance, c1_ALP)
     + 1.92E-5 * c1_ALP) + 6.63E-5);
   c1_u_B = c1_Vt;
   c1_oe_x = c1_nb_A;
-  c1_vd_y = c1_u_B;
+  c1_sd_y = c1_u_B;
   c1_pe_x = c1_oe_x;
-  c1_wd_y = c1_vd_y;
+  c1_td_y = c1_sd_y;
   c1_qe_x = c1_pe_x;
-  c1_xd_y = c1_wd_y;
-  c1_yd_y = c1_qe_x / c1_xd_y;
+  c1_ud_y = c1_td_y;
+  c1_vd_y = c1_qe_x / c1_ud_y;
   c1_F[95] = -0.0025 * (0.69609284164731566 * c1_q + 133.33333333333334 *
-                        c1_qbar * (c1_ud_y + c1_yd_y));
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 260);
+                        c1_qbar * (c1_rd_y + c1_vd_y));
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 271);
   c1_F[125] = -0.0025 * (0.69609284164731566 * c1_p + 0.014338034095370216 *
     c1_r);
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 261);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 272);
   c1_ob_A = 0.015120148985768788 * ((c1_Cn_dE1 * c1_dE - c1_ALP * c1_Cn_dE2 *
     c1_dE) + 0.00606);
   c1_v_B = c1_Vt;
   c1_re_x = c1_ob_A;
-  c1_ae_y = c1_v_B;
+  c1_wd_y = c1_v_B;
   c1_se_x = c1_re_x;
-  c1_be_y = c1_ae_y;
+  c1_xd_y = c1_wd_y;
   c1_te_x = c1_se_x;
-  c1_ce_y = c1_be_y;
-  c1_de_y = c1_te_x / c1_ce_y;
+  c1_yd_y = c1_xd_y;
+  c1_ae_y = c1_te_x / c1_yd_y;
   c1_pb_A = 0.000711500803295087 * ((0.000105 * c1_ALP + c1_Cl_dE1 * c1_dE) +
     0.000436);
   c1_w_B = c1_Vt;
   c1_ue_x = c1_pb_A;
-  c1_ee_y = c1_w_B;
+  c1_be_y = c1_w_B;
   c1_ve_x = c1_ue_x;
-  c1_fe_y = c1_ee_y;
+  c1_ce_y = c1_be_y;
   c1_we_x = c1_ve_x;
-  c1_ge_y = c1_fe_y;
-  c1_he_y = c1_we_x / c1_ge_y;
+  c1_de_y = c1_ce_y;
+  c1_ee_y = c1_we_x / c1_de_y;
   c1_F[155] = 1.0 - 0.0025 * (0.014338034095370216 * c1_q + 133.33333333333334 *
-    c1_qbar * (c1_de_y - c1_he_y));
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 262);
+    c1_qbar * (c1_ae_y - c1_ee_y));
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 273);
   c1_F[425] = -0.00024836063296167579 * c1_dA * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 263);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 274);
   c1_F[455] = -0.00024836063296167579 * c1_ALP * c1_dA * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 264);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 275);
   c1_F[485] = 0.00024836063296167579 * c1_mpower(chartInstance, c1_ALP) * c1_dA *
     0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 265);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 276);
   c1_F[515] = -0.00024836063296167579 * c1_dR * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 266);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 277);
   c1_F[545] = -0.00024836063296167579 * c1_ALP * c1_dR * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 267);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 278);
   c1_qb_A = 0.047433386886339135 * c1_dE * 0.005 * c1_qbar * c1_r;
   c1_x_B = c1_Vt;
   c1_xe_x = c1_qb_A;
-  c1_ie_y = c1_x_B;
+  c1_fe_y = c1_x_B;
   c1_ye_x = c1_xe_x;
-  c1_je_y = c1_ie_y;
+  c1_ge_y = c1_fe_y;
   c1_af_x = c1_ye_x;
-  c1_ke_y = c1_je_y;
-  c1_le_y = c1_af_x / c1_ke_y;
-  c1_F[575] = c1_le_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 268);
+  c1_he_y = c1_ge_y;
+  c1_ie_y = c1_af_x / c1_he_y;
+  c1_F[575] = c1_ie_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 279);
   c1_F[725] = 0.0052779276638749316 * c1_dA * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 269);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 280);
   c1_F[755] = 0.0052779276638749316 * c1_ALP * c1_dA * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 270);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 281);
   c1_F[785] = -0.0052779276638749316 * c1_dR * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 271);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 282);
   c1_F[815] = 0.0052779276638749316 * c1_ALP * c1_dR * 0.005 * c1_qbar;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 272);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 283);
   c1_rb_A = -(1.0080099323845859 * c1_dE * 0.005 * c1_qbar * c1_r);
   c1_y_B = c1_Vt;
   c1_bf_x = c1_rb_A;
-  c1_me_y = c1_y_B;
+  c1_je_y = c1_y_B;
   c1_cf_x = c1_bf_x;
-  c1_ne_y = c1_me_y;
+  c1_ke_y = c1_je_y;
   c1_df_x = c1_cf_x;
-  c1_oe_y = c1_ne_y;
-  c1_pe_y = c1_df_x / c1_oe_y;
-  c1_F[845] = c1_pe_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 273);
+  c1_le_y = c1_ke_y;
+  c1_me_y = c1_df_x / c1_le_y;
+  c1_F[845] = c1_me_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 284);
   c1_sb_A = 1.0080099323845859 * c1_ALP * c1_dE * 0.005 * c1_qbar * c1_r;
   c1_ab_B = c1_Vt;
   c1_ef_x = c1_sb_A;
-  c1_qe_y = c1_ab_B;
+  c1_ne_y = c1_ab_B;
   c1_ff_x = c1_ef_x;
-  c1_re_y = c1_qe_y;
+  c1_oe_y = c1_ne_y;
   c1_gf_x = c1_ff_x;
-  c1_se_y = c1_re_y;
-  c1_te_y = c1_gf_x / c1_se_y;
-  c1_F[875] = c1_te_y;
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 277);
+  c1_pe_y = c1_oe_y;
+  c1_qe_y = c1_gf_x / c1_pe_y;
+  c1_F[875] = c1_qe_y;
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 288);
   for (c1_i55 = 0; c1_i55 < 900; c1_i55++) {
     c1_c_hoistedGlobal[c1_i55] = chartInstance->c1_pCovariance[c1_i55];
   }
@@ -2606,7 +2613,7 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   c1_b_eml_scalar_eg(chartInstance);
   c1_b_eml_scalar_eg(chartInstance);
   for (c1_i57 = 0; c1_i57 < 900; c1_i57++) {
-    c1_ue_y[c1_i57] = 0.0;
+    c1_re_y[c1_i57] = 0.0;
   }
 
   for (c1_i58 = 0; c1_i58 < 900; c1_i58++) {
@@ -2617,7 +2624,7 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
     c1_d_hoistedGlobal[c1_i59] = c1_c_hoistedGlobal[c1_i59];
   }
 
-  c1_g_eml_xgemm(chartInstance, c1_b_a, c1_d_hoistedGlobal, c1_ue_y);
+  c1_g_eml_xgemm(chartInstance, c1_b_a, c1_d_hoistedGlobal, c1_re_y);
   c1_i60 = 0;
   for (c1_i61 = 0; c1_i61 < 30; c1_i61++) {
     c1_i62 = 0;
@@ -2632,28 +2639,28 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   c1_b_eml_scalar_eg(chartInstance);
   c1_b_eml_scalar_eg(chartInstance);
   for (c1_i64 = 0; c1_i64 < 900; c1_i64++) {
-    c1_ve_y[c1_i64] = 0.0;
+    c1_se_y[c1_i64] = 0.0;
   }
 
   for (c1_i65 = 0; c1_i65 < 900; c1_i65++) {
-    c1_we_y[c1_i65] = c1_ue_y[c1_i65];
+    c1_te_y[c1_i65] = c1_re_y[c1_i65];
   }
 
   for (c1_i66 = 0; c1_i66 < 900; c1_i66++) {
     c1_c_a[c1_i66] = c1_a[c1_i66];
   }
 
-  c1_g_eml_xgemm(chartInstance, c1_we_y, c1_c_a, c1_ve_y);
+  c1_g_eml_xgemm(chartInstance, c1_te_y, c1_c_a, c1_se_y);
   for (c1_i67 = 0; c1_i67 < 900; c1_i67++) {
-    chartInstance->c1_pCovariance[c1_i67] = c1_ve_y[c1_i67] + c1_Qcov[c1_i67];
+    chartInstance->c1_pCovariance[c1_i67] = c1_se_y[c1_i67] + c1_Qcov[c1_i67];
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 280);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 291);
   for (c1_i68 = 0; c1_i68 < 180; c1_i68++) {
     c1_H[c1_i68] = c1_d_a[c1_i68];
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 282);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 293);
   for (c1_i69 = 0; c1_i69 < 3; c1_i69++) {
     c1_b_accelerations[c1_i69] = c1_accelerations[c1_i69];
   }
@@ -2667,7 +2674,7 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
       chartInstance->c1_pStates[c1_i71];
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 283);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 294);
   for (c1_i72 = 0; c1_i72 < 900; c1_i72++) {
     c1_c_hoistedGlobal[c1_i72] = chartInstance->c1_pCovariance[c1_i72];
   }
@@ -2675,7 +2682,7 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   c1_c_eml_scalar_eg(chartInstance);
   c1_c_eml_scalar_eg(chartInstance);
   for (c1_i73 = 0; c1_i73 < 180; c1_i73++) {
-    c1_xe_y[c1_i73] = 0.0;
+    c1_ue_y[c1_i73] = 0.0;
   }
 
   for (c1_i74 = 0; c1_i74 < 180; c1_i74++) {
@@ -2686,27 +2693,27 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
     c1_e_hoistedGlobal[c1_i75] = c1_c_hoistedGlobal[c1_i75];
   }
 
-  c1_h_eml_xgemm(chartInstance, c1_e_a, c1_e_hoistedGlobal, c1_xe_y);
+  c1_h_eml_xgemm(chartInstance, c1_e_a, c1_e_hoistedGlobal, c1_ue_y);
   c1_d_eml_scalar_eg(chartInstance);
   c1_d_eml_scalar_eg(chartInstance);
   for (c1_i76 = 0; c1_i76 < 36; c1_i76++) {
-    c1_ye_y[c1_i76] = 0.0;
+    c1_ve_y[c1_i76] = 0.0;
   }
 
   for (c1_i77 = 0; c1_i77 < 180; c1_i77++) {
-    c1_af_y[c1_i77] = c1_xe_y[c1_i77];
+    c1_we_y[c1_i77] = c1_ue_y[c1_i77];
   }
 
   for (c1_i78 = 0; c1_i78 < 180; c1_i78++) {
     c1_c_b[c1_i78] = c1_b_b[c1_i78];
   }
 
-  c1_i_eml_xgemm(chartInstance, c1_af_y, c1_c_b, c1_ye_y);
+  c1_i_eml_xgemm(chartInstance, c1_we_y, c1_c_b, c1_ve_y);
   for (c1_i79 = 0; c1_i79 < 36; c1_i79++) {
-    c1_SCov[c1_i79] = c1_ye_y[c1_i79] + c1_Rcov[c1_i79];
+    c1_SCov[c1_i79] = c1_ve_y[c1_i79] + c1_Rcov[c1_i79];
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 284);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 295);
   for (c1_i80 = 0; c1_i80 < 900; c1_i80++) {
     c1_c_hoistedGlobal[c1_i80] = chartInstance->c1_pCovariance[c1_i80];
   }
@@ -2714,7 +2721,7 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   c1_e_eml_scalar_eg(chartInstance);
   c1_e_eml_scalar_eg(chartInstance);
   for (c1_i81 = 0; c1_i81 < 180; c1_i81++) {
-    c1_bf_y[c1_i81] = 0.0;
+    c1_xe_y[c1_i81] = 0.0;
   }
 
   for (c1_i82 = 0; c1_i82 < 900; c1_i82++) {
@@ -2725,12 +2732,12 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
     c1_d_b[c1_i83] = c1_b_b[c1_i83];
   }
 
-  c1_j_eml_xgemm(chartInstance, c1_f_hoistedGlobal, c1_d_b, c1_bf_y);
+  c1_j_eml_xgemm(chartInstance, c1_f_hoistedGlobal, c1_d_b, c1_xe_y);
   for (c1_i84 = 0; c1_i84 < 36; c1_i84++) {
     c1_b_SCov[c1_i84] = c1_SCov[c1_i84];
   }
 
-  c1_inv(chartInstance, c1_b_SCov, c1_ye_y);
+  c1_inv(chartInstance, c1_b_SCov, c1_ve_y);
   c1_f_eml_scalar_eg(chartInstance);
   c1_f_eml_scalar_eg(chartInstance);
   for (c1_i85 = 0; c1_i85 < 180; c1_i85++) {
@@ -2742,11 +2749,11 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   }
 
   for (c1_i87 = 0; c1_i87 < 180; c1_i87++) {
-    c1_dv15[c1_i87] = c1_bf_y[c1_i87];
+    c1_dv15[c1_i87] = c1_xe_y[c1_i87];
   }
 
   for (c1_i88 = 0; c1_i88 < 36; c1_i88++) {
-    c1_dv16[c1_i88] = c1_ye_y[c1_i88];
+    c1_dv16[c1_i88] = c1_ve_y[c1_i88];
   }
 
   for (c1_i89 = 0; c1_i89 < 180; c1_i89++) {
@@ -2758,9 +2765,9 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   }
 
   c1_k_eml_xgemm(chartInstance, c1_dv17, c1_dv18, c1_k);
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 285);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 296);
   for (c1_i91 = 0; c1_i91 < 180; c1_i91++) {
-    c1_bf_y[c1_i91] = c1_k[c1_i91];
+    c1_xe_y[c1_i91] = c1_k[c1_i91];
   }
 
   for (c1_i92 = 0; c1_i92 < 6; c1_i92++) {
@@ -2798,40 +2805,40 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
     c1_correction[c1_i99] = 0.0;
     c1_i100 = 0;
     for (c1_i101 = 0; c1_i101 < 6; c1_i101++) {
-      c1_correction[c1_i99] += c1_bf_y[c1_i100 + c1_i99] * c1_e_b[c1_i101];
+      c1_correction[c1_i99] += c1_xe_y[c1_i100 + c1_i99] * c1_e_b[c1_i101];
       c1_i100 += 30;
     }
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 286);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 297);
   for (c1_i102 = 0; c1_i102 < 30; c1_i102++) {
     chartInstance->c1_pStates[c1_i102] += c1_correction[c1_i102];
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 287);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 298);
   for (c1_i103 = 0; c1_i103 < 900; c1_i103++) {
     c1_c_hoistedGlobal[c1_i103] = chartInstance->c1_pCovariance[c1_i103];
   }
 
   for (c1_i104 = 0; c1_i104 < 180; c1_i104++) {
-    c1_bf_y[c1_i104] = c1_k[c1_i104];
+    c1_xe_y[c1_i104] = c1_k[c1_i104];
   }
 
   c1_h_eml_scalar_eg(chartInstance);
   c1_h_eml_scalar_eg(chartInstance);
   for (c1_i105 = 0; c1_i105 < 900; c1_i105++) {
-    c1_ue_y[c1_i105] = 0.0;
+    c1_re_y[c1_i105] = 0.0;
   }
 
   for (c1_i106 = 0; c1_i106 < 180; c1_i106++) {
-    c1_cf_y[c1_i106] = c1_bf_y[c1_i106];
+    c1_ye_y[c1_i106] = c1_xe_y[c1_i106];
   }
 
   for (c1_i107 = 0; c1_i107 < 180; c1_i107++) {
     c1_f_a[c1_i107] = c1_d_a[c1_i107];
   }
 
-  c1_l_eml_xgemm(chartInstance, c1_cf_y, c1_f_a, c1_ue_y);
+  c1_l_eml_xgemm(chartInstance, c1_ye_y, c1_f_a, c1_re_y);
   for (c1_i108 = 0; c1_i108 < 900; c1_i108++) {
     c1_a[c1_i108] = chartInstance->c1_pCovariance[c1_i108];
   }
@@ -2839,24 +2846,24 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
   c1_b_eml_scalar_eg(chartInstance);
   c1_b_eml_scalar_eg(chartInstance);
   for (c1_i109 = 0; c1_i109 < 900; c1_i109++) {
-    c1_ve_y[c1_i109] = 0.0;
+    c1_se_y[c1_i109] = 0.0;
   }
 
   for (c1_i110 = 0; c1_i110 < 900; c1_i110++) {
-    c1_df_y[c1_i110] = c1_ue_y[c1_i110];
+    c1_af_y[c1_i110] = c1_re_y[c1_i110];
   }
 
   for (c1_i111 = 0; c1_i111 < 900; c1_i111++) {
     c1_g_a[c1_i111] = c1_a[c1_i111];
   }
 
-  c1_g_eml_xgemm(chartInstance, c1_df_y, c1_g_a, c1_ve_y);
+  c1_g_eml_xgemm(chartInstance, c1_af_y, c1_g_a, c1_se_y);
   for (c1_i112 = 0; c1_i112 < 900; c1_i112++) {
     chartInstance->c1_pCovariance[c1_i112] = c1_c_hoistedGlobal[c1_i112] -
-      c1_ve_y[c1_i112];
+      c1_se_y[c1_i112];
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 290);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 301);
   for (c1_i113 = 0; c1_i113 < 900; c1_i113++) {
     c1_dv19[c1_i113] = chartInstance->c1_pCovariance[c1_i113];
   }
@@ -2866,12 +2873,12 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
     c1_pCovarianceOUT[c1_i114] = c1_dv20[c1_i114];
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 291);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 302);
   for (c1_i115 = 0; c1_i115 < 30; c1_i115++) {
     c1_pStatesOUT[c1_i115] = chartInstance->c1_pStates[c1_i115];
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 292);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, 303);
   for (c1_i116 = 0; c1_i116 < 36; c1_i116++) {
     c1_c_SCov[c1_i116] = c1_SCov[c1_i116];
   }
@@ -2881,7 +2888,7 @@ static void c1_simulateEKF(SFc1_aircraftControl_FullStateFiltersInstanceStruct
     c1_SCovOUT[c1_i117] = c1_dv21[c1_i117];
   }
 
-  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, -292);
+  _SFD_SCRIPT_CALL(0U, chartInstance->c1_sfEvent, -303);
   _SFD_SYMBOL_SCOPE_POP();
 }
 
@@ -4093,7 +4100,7 @@ static void c1_info_helper(const mxArray **c1_info)
   sf_mex_addfield(*c1_info, c1_emlrt_marshallOut(
     "[E]C:/Users/Rudaba/Documents/PhD Take 2/Simulations/AircraftModelling/simulateEKF.m"),
                   "resolved", "resolved", 0);
-  sf_mex_addfield(*c1_info, c1_b_emlrt_marshallOut(1435716145U), "fileTimeLo",
+  sf_mex_addfield(*c1_info, c1_b_emlrt_marshallOut(1435893289U), "fileTimeLo",
                   "fileTimeLo", 0);
   sf_mex_addfield(*c1_info, c1_b_emlrt_marshallOut(0U), "fileTimeHi",
                   "fileTimeHi", 0);
@@ -11105,10 +11112,10 @@ extern void utFree(void*);
 
 void sf_c1_aircraftControl_FullStateFilters_get_check_sum(mxArray *plhs[])
 {
-  ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(4125330085U);
-  ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(2169436634U);
-  ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(1984334248U);
-  ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(4081964520U);
+  ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(3769345279U);
+  ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(3301695779U);
+  ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(3748157700U);
+  ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(1740369693U);
 }
 
 mxArray *sf_c1_aircraftControl_FullStateFilters_get_autoinheritance_info(void)
@@ -11120,19 +11127,19 @@ mxArray *sf_c1_aircraftControl_FullStateFilters_get_autoinheritance_info(void)
     autoinheritanceFields);
 
   {
-    mxArray *mxChecksum = mxCreateString("5w68PpIXbqNFsxh3WSzSAB");
+    mxArray *mxChecksum = mxCreateString("oUINmhN7gosRR5i1jRiTjB");
     mxSetField(mxAutoinheritanceInfo,0,"checksum",mxChecksum);
   }
 
   {
     const char *dataFields[] = { "size", "type", "complexity" };
 
-    mxArray *mxData = mxCreateStructMatrix(1,8,3,dataFields);
+    mxArray *mxData = mxCreateStructMatrix(1,7,3,dataFields);
 
     {
       mxArray *mxSize = mxCreateDoubleMatrix(1,2,mxREAL);
       double *pr = mxGetPr(mxSize);
-      pr[0] = (double)(1);
+      pr[0] = (double)(3);
       pr[1] = (double)(1);
       mxSetField(mxData,0,"size",mxSize);
     }
@@ -11170,7 +11177,7 @@ mxArray *sf_c1_aircraftControl_FullStateFilters_get_autoinheritance_info(void)
     {
       mxArray *mxSize = mxCreateDoubleMatrix(1,2,mxREAL);
       double *pr = mxGetPr(mxSize);
-      pr[0] = (double)(3);
+      pr[0] = (double)(1);
       pr[1] = (double)(1);
       mxSetField(mxData,2,"size",mxSize);
     }
@@ -11208,7 +11215,7 @@ mxArray *sf_c1_aircraftControl_FullStateFilters_get_autoinheritance_info(void)
     {
       mxArray *mxSize = mxCreateDoubleMatrix(1,2,mxREAL);
       double *pr = mxGetPr(mxSize);
-      pr[0] = (double)(1);
+      pr[0] = (double)(4);
       pr[1] = (double)(1);
       mxSetField(mxData,4,"size",mxSize);
     }
@@ -11227,7 +11234,7 @@ mxArray *sf_c1_aircraftControl_FullStateFilters_get_autoinheritance_info(void)
     {
       mxArray *mxSize = mxCreateDoubleMatrix(1,2,mxREAL);
       double *pr = mxGetPr(mxSize);
-      pr[0] = (double)(4);
+      pr[0] = (double)(1);
       pr[1] = (double)(1);
       mxSetField(mxData,5,"size",mxSize);
     }
@@ -11261,25 +11268,6 @@ mxArray *sf_c1_aircraftControl_FullStateFilters_get_autoinheritance_info(void)
     }
 
     mxSetField(mxData,6,"complexity",mxCreateDoubleScalar(0));
-
-    {
-      mxArray *mxSize = mxCreateDoubleMatrix(1,2,mxREAL);
-      double *pr = mxGetPr(mxSize);
-      pr[0] = (double)(1);
-      pr[1] = (double)(1);
-      mxSetField(mxData,7,"size",mxSize);
-    }
-
-    {
-      const char *typeFields[] = { "base", "fixpt" };
-
-      mxArray *mxType = mxCreateStructMatrix(1,1,2,typeFields);
-      mxSetField(mxType,0,"base",mxCreateDoubleScalar(10));
-      mxSetField(mxType,0,"fixpt",mxCreateDoubleMatrix(0,0,mxREAL));
-      mxSetField(mxData,7,"type",mxType);
-    }
-
-    mxSetField(mxData,7,"complexity",mxCreateDoubleScalar(0));
     mxSetField(mxAutoinheritanceInfo,0,"inputs",mxData);
   }
 
@@ -11428,7 +11416,7 @@ static void chart_debug_initialization(SimStruct *S, unsigned int
            1,
            1,
            0,
-           12,
+           11,
            0,
            0,
            0,
@@ -11454,18 +11442,17 @@ static void chart_debug_initialization(SimStruct *S, unsigned int
             0,
             0,
             0);
-          _SFD_SET_DATA_PROPS(0,1,1,0,"filterModel");
-          _SFD_SET_DATA_PROPS(1,1,1,0,"accelerations");
-          _SFD_SET_DATA_PROPS(2,1,1,0,"omega");
-          _SFD_SET_DATA_PROPS(3,1,1,0,"ALP");
-          _SFD_SET_DATA_PROPS(4,1,1,0,"BET");
-          _SFD_SET_DATA_PROPS(5,1,1,0,"u");
-          _SFD_SET_DATA_PROPS(6,2,0,1,"states_OUT");
-          _SFD_SET_DATA_PROPS(7,1,1,0,"Vt");
-          _SFD_SET_DATA_PROPS(8,2,0,1,"cov_OUT");
-          _SFD_SET_DATA_PROPS(9,1,1,0,"H");
-          _SFD_SET_DATA_PROPS(10,2,0,1,"innovation");
-          _SFD_SET_DATA_PROPS(11,2,0,1,"S");
+          _SFD_SET_DATA_PROPS(0,1,1,0,"accelerations");
+          _SFD_SET_DATA_PROPS(1,1,1,0,"omega");
+          _SFD_SET_DATA_PROPS(2,1,1,0,"ALP");
+          _SFD_SET_DATA_PROPS(3,1,1,0,"BET");
+          _SFD_SET_DATA_PROPS(4,1,1,0,"u");
+          _SFD_SET_DATA_PROPS(5,2,0,1,"states_OUT");
+          _SFD_SET_DATA_PROPS(6,1,1,0,"Vt");
+          _SFD_SET_DATA_PROPS(7,2,0,1,"cov_OUT");
+          _SFD_SET_DATA_PROPS(8,1,1,0,"H");
+          _SFD_SET_DATA_PROPS(9,2,0,1,"innovation");
+          _SFD_SET_DATA_PROPS(10,2,0,1,"S");
           _SFD_STATE_INFO(0,0,2);
           _SFD_CH_SUBSTATE_COUNT(0);
           _SFD_CH_SUBSTATE_DECOMP(0);
@@ -11481,12 +11468,17 @@ static void chart_debug_initialization(SimStruct *S, unsigned int
 
         /* Initialization of MATLAB Function Model Coverage */
         _SFD_CV_INIT_EML(0,1,1,0,0,0,0,0,0,0,0);
-        _SFD_CV_INIT_EML_FCN(0,0,"eML_blk_kernel",0,-1,366);
+        _SFD_CV_INIT_EML_FCN(0,0,"eML_blk_kernel",0,-1,200);
         _SFD_CV_INIT_SCRIPT(0,1,1,0,0,0,0,0,0,0);
-        _SFD_CV_INIT_SCRIPT_FCN(0,0,"simulateEKF",0,-1,14058);
+        _SFD_CV_INIT_SCRIPT_FCN(0,0,"simulateEKF",0,-1,14216);
         _SFD_CV_INIT_SCRIPT_IF(0,0,210,229,-1,2484);
-        _SFD_SET_DATA_COMPILED_PROPS(0,SF_DOUBLE,0,NULL,0,0,0,0.0,1.0,0,0,
-          (MexFcnForType)c1_c_sf_marshallOut,(MexInFcnForType)NULL);
+
+        {
+          unsigned int dimVector[1];
+          dimVector[0]= 3;
+          _SFD_SET_DATA_COMPILED_PROPS(0,SF_DOUBLE,1,&(dimVector[0]),0,0,0,0.0,
+            1.0,0,0,(MexFcnForType)c1_e_sf_marshallOut,(MexInFcnForType)NULL);
+        }
 
         {
           unsigned int dimVector[1];
@@ -11495,46 +11487,47 @@ static void chart_debug_initialization(SimStruct *S, unsigned int
             1.0,0,0,(MexFcnForType)c1_e_sf_marshallOut,(MexInFcnForType)NULL);
         }
 
-        {
-          unsigned int dimVector[1];
-          dimVector[0]= 3;
-          _SFD_SET_DATA_COMPILED_PROPS(2,SF_DOUBLE,1,&(dimVector[0]),0,0,0,0.0,
-            1.0,0,0,(MexFcnForType)c1_e_sf_marshallOut,(MexInFcnForType)NULL);
-        }
-
-        _SFD_SET_DATA_COMPILED_PROPS(3,SF_DOUBLE,0,NULL,0,0,0,0.0,1.0,0,0,
+        _SFD_SET_DATA_COMPILED_PROPS(2,SF_DOUBLE,0,NULL,0,0,0,0.0,1.0,0,0,
           (MexFcnForType)c1_c_sf_marshallOut,(MexInFcnForType)NULL);
-        _SFD_SET_DATA_COMPILED_PROPS(4,SF_DOUBLE,0,NULL,0,0,0,0.0,1.0,0,0,
+        _SFD_SET_DATA_COMPILED_PROPS(3,SF_DOUBLE,0,NULL,0,0,0,0.0,1.0,0,0,
           (MexFcnForType)c1_c_sf_marshallOut,(MexInFcnForType)NULL);
 
         {
           unsigned int dimVector[1];
           dimVector[0]= 4;
-          _SFD_SET_DATA_COMPILED_PROPS(5,SF_DOUBLE,1,&(dimVector[0]),0,0,0,0.0,
+          _SFD_SET_DATA_COMPILED_PROPS(4,SF_DOUBLE,1,&(dimVector[0]),0,0,0,0.0,
             1.0,0,0,(MexFcnForType)c1_d_sf_marshallOut,(MexInFcnForType)NULL);
         }
 
         {
           unsigned int dimVector[1];
           dimVector[0]= 30;
-          _SFD_SET_DATA_COMPILED_PROPS(6,SF_DOUBLE,1,&(dimVector[0]),0,0,0,0.0,
+          _SFD_SET_DATA_COMPILED_PROPS(5,SF_DOUBLE,1,&(dimVector[0]),0,0,0,0.0,
             1.0,0,0,(MexFcnForType)c1_b_sf_marshallOut,(MexInFcnForType)
             c1_b_sf_marshallIn);
         }
 
-        _SFD_SET_DATA_COMPILED_PROPS(7,SF_DOUBLE,0,NULL,0,0,0,0.0,1.0,0,0,
+        _SFD_SET_DATA_COMPILED_PROPS(6,SF_DOUBLE,0,NULL,0,0,0,0.0,1.0,0,0,
           (MexFcnForType)c1_c_sf_marshallOut,(MexInFcnForType)NULL);
 
         {
           unsigned int dimVector[1];
           dimVector[0]= 30;
-          _SFD_SET_DATA_COMPILED_PROPS(8,SF_DOUBLE,1,&(dimVector[0]),0,0,0,0.0,
+          _SFD_SET_DATA_COMPILED_PROPS(7,SF_DOUBLE,1,&(dimVector[0]),0,0,0,0.0,
             1.0,0,0,(MexFcnForType)c1_b_sf_marshallOut,(MexInFcnForType)
             c1_b_sf_marshallIn);
         }
 
-        _SFD_SET_DATA_COMPILED_PROPS(9,SF_DOUBLE,0,NULL,0,0,0,0.0,1.0,0,0,
+        _SFD_SET_DATA_COMPILED_PROPS(8,SF_DOUBLE,0,NULL,0,0,0,0.0,1.0,0,0,
           (MexFcnForType)c1_c_sf_marshallOut,(MexInFcnForType)NULL);
+
+        {
+          unsigned int dimVector[1];
+          dimVector[0]= 6;
+          _SFD_SET_DATA_COMPILED_PROPS(9,SF_DOUBLE,1,&(dimVector[0]),0,0,0,0.0,
+            1.0,0,0,(MexFcnForType)c1_sf_marshallOut,(MexInFcnForType)
+            c1_sf_marshallIn);
+        }
 
         {
           unsigned int dimVector[1];
@@ -11545,15 +11538,6 @@ static void chart_debug_initialization(SimStruct *S, unsigned int
         }
 
         {
-          unsigned int dimVector[1];
-          dimVector[0]= 6;
-          _SFD_SET_DATA_COMPILED_PROPS(11,SF_DOUBLE,1,&(dimVector[0]),0,0,0,0.0,
-            1.0,0,0,(MexFcnForType)c1_sf_marshallOut,(MexInFcnForType)
-            c1_sf_marshallIn);
-        }
-
-        {
-          real_T *c1_filterModel;
           real_T *c1_ALP;
           real_T *c1_BET;
           real_T *c1_Vt;
@@ -11568,30 +11552,28 @@ static void chart_debug_initialization(SimStruct *S, unsigned int
           c1_S = (real_T (*)[6])ssGetOutputPortSignal(chartInstance->S, 4);
           c1_innovation = (real_T (*)[6])ssGetOutputPortSignal(chartInstance->S,
             3);
-          c1_H = (real_T *)ssGetInputPortSignal(chartInstance->S, 7);
+          c1_H = (real_T *)ssGetInputPortSignal(chartInstance->S, 6);
           c1_cov_OUT = (real_T (*)[30])ssGetOutputPortSignal(chartInstance->S, 2);
-          c1_Vt = (real_T *)ssGetInputPortSignal(chartInstance->S, 6);
+          c1_Vt = (real_T *)ssGetInputPortSignal(chartInstance->S, 5);
           c1_states_OUT = (real_T (*)[30])ssGetOutputPortSignal(chartInstance->S,
             1);
-          c1_u = (real_T (*)[4])ssGetInputPortSignal(chartInstance->S, 5);
-          c1_BET = (real_T *)ssGetInputPortSignal(chartInstance->S, 4);
-          c1_ALP = (real_T *)ssGetInputPortSignal(chartInstance->S, 3);
-          c1_omega = (real_T (*)[3])ssGetInputPortSignal(chartInstance->S, 2);
+          c1_u = (real_T (*)[4])ssGetInputPortSignal(chartInstance->S, 4);
+          c1_BET = (real_T *)ssGetInputPortSignal(chartInstance->S, 3);
+          c1_ALP = (real_T *)ssGetInputPortSignal(chartInstance->S, 2);
+          c1_omega = (real_T (*)[3])ssGetInputPortSignal(chartInstance->S, 1);
           c1_accelerations = (real_T (*)[3])ssGetInputPortSignal
-            (chartInstance->S, 1);
-          c1_filterModel = (real_T *)ssGetInputPortSignal(chartInstance->S, 0);
-          _SFD_SET_DATA_VALUE_PTR(0U, c1_filterModel);
-          _SFD_SET_DATA_VALUE_PTR(1U, *c1_accelerations);
-          _SFD_SET_DATA_VALUE_PTR(2U, *c1_omega);
-          _SFD_SET_DATA_VALUE_PTR(3U, c1_ALP);
-          _SFD_SET_DATA_VALUE_PTR(4U, c1_BET);
-          _SFD_SET_DATA_VALUE_PTR(5U, *c1_u);
-          _SFD_SET_DATA_VALUE_PTR(6U, *c1_states_OUT);
-          _SFD_SET_DATA_VALUE_PTR(7U, c1_Vt);
-          _SFD_SET_DATA_VALUE_PTR(8U, *c1_cov_OUT);
-          _SFD_SET_DATA_VALUE_PTR(9U, c1_H);
-          _SFD_SET_DATA_VALUE_PTR(10U, *c1_innovation);
-          _SFD_SET_DATA_VALUE_PTR(11U, *c1_S);
+            (chartInstance->S, 0);
+          _SFD_SET_DATA_VALUE_PTR(0U, *c1_accelerations);
+          _SFD_SET_DATA_VALUE_PTR(1U, *c1_omega);
+          _SFD_SET_DATA_VALUE_PTR(2U, c1_ALP);
+          _SFD_SET_DATA_VALUE_PTR(3U, c1_BET);
+          _SFD_SET_DATA_VALUE_PTR(4U, *c1_u);
+          _SFD_SET_DATA_VALUE_PTR(5U, *c1_states_OUT);
+          _SFD_SET_DATA_VALUE_PTR(6U, c1_Vt);
+          _SFD_SET_DATA_VALUE_PTR(7U, *c1_cov_OUT);
+          _SFD_SET_DATA_VALUE_PTR(8U, c1_H);
+          _SFD_SET_DATA_VALUE_PTR(9U, *c1_innovation);
+          _SFD_SET_DATA_VALUE_PTR(10U, *c1_S);
         }
       }
     } else {
@@ -11604,7 +11586,7 @@ static void chart_debug_initialization(SimStruct *S, unsigned int
 
 static const char* sf_get_instance_specialization(void)
 {
-  return "pcNqyitlba3ZIdq3PqcODB";
+  return "MA4eD7grKmaDzi7z6VcRXE";
 }
 
 static void sf_opaque_initialize_c1_aircraftControl_FullStateFilters(void
@@ -11780,9 +11762,8 @@ static void mdlSetWorkWidths_c1_aircraftControl_FullStateFilters(SimStruct *S)
       ssSetInputPortOptimOpts(S, 4, SS_REUSABLE_AND_LOCAL);
       ssSetInputPortOptimOpts(S, 5, SS_REUSABLE_AND_LOCAL);
       ssSetInputPortOptimOpts(S, 6, SS_REUSABLE_AND_LOCAL);
-      ssSetInputPortOptimOpts(S, 7, SS_REUSABLE_AND_LOCAL);
       sf_mark_chart_expressionable_inputs(S,sf_get_instance_specialization(),
-        infoStruct,1,8);
+        infoStruct,1,7);
       sf_mark_chart_reusable_outputs(S,sf_get_instance_specialization(),
         infoStruct,1,4);
     }
@@ -11796,7 +11777,7 @@ static void mdlSetWorkWidths_c1_aircraftControl_FullStateFilters(SimStruct *S)
 
     {
       unsigned int inPortIdx;
-      for (inPortIdx=0; inPortIdx < 8; ++inPortIdx) {
+      for (inPortIdx=0; inPortIdx < 7; ++inPortIdx) {
         ssSetInputPortOptimizeInIR(S, inPortIdx, 1U);
       }
     }
@@ -11807,10 +11788,10 @@ static void mdlSetWorkWidths_c1_aircraftControl_FullStateFilters(SimStruct *S)
   }
 
   ssSetOptions(S,ssGetOptions(S)|SS_OPTION_WORKS_WITH_CODE_REUSE);
-  ssSetChecksum0(S,(2068866283U));
-  ssSetChecksum1(S,(2472364257U));
-  ssSetChecksum2(S,(2511435454U));
-  ssSetChecksum3(S,(2340905280U));
+  ssSetChecksum0(S,(2220183766U));
+  ssSetChecksum1(S,(3336580039U));
+  ssSetChecksum2(S,(4113098490U));
+  ssSetChecksum3(S,(2869376535U));
   ssSetmdlDerivatives(S, NULL);
   ssSetExplicitFCSSCtrl(S,1);
   ssSupportsMultipleExecInstances(S,1);

@@ -56,15 +56,15 @@ end
 
 %*****Define Q and R matrices*****
 % Qcov = diag(1e-9*[0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2]);
-Qcov        = (eye(30,30)*0.1).^2;
-Qcov(1,1)   = 0.1^2;
-Qcov(2,2)   = 0.1^2;
-Qcov(3,3)   = 0.1^2;
-Qcov(4,4)   = 0.1^2;
-Qcov(5,5)   = 0.1^2;
-Qcov(6,6)   = 0.1^2;
+Qcov        = (eye(30,30)*0.01).^2;
+Qcov(1,1)   = 0.01^2;
+Qcov(2,2)   = 0.01^2;
+Qcov(3,3)   = 0.01^2;
+Qcov(4,4)   = 0.01^2;
+Qcov(5,5)   = 0.01^2;
+Qcov(6,6)   = 0.01^2;
 
-Rcov        = diag([0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2]);
+Rcov        = diag([0.01^2,0.01^2,0.01^2,0.01^2,0.01^2,0.01^2]);
 
 %*****Constants*****
 R2D     = 180/pi;
@@ -112,7 +112,7 @@ T = Tmax*throttle;
 
 %*****Extract States From Filter*****
 %Calculate sigma points (UT taken from Beyond the Kalman filter)
-kappa           = 0.5;
+kappa           = 0.0001;
 na              = size(pStates,1); %length of states
 N               = size(measurement,1);
 

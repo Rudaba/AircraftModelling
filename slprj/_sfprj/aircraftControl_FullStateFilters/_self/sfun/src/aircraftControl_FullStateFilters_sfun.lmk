@@ -9,6 +9,7 @@ OBJECTS = \
 	"aircraftControl_FullStateFilters_sfun.obj"\
 	"c1_aircraftControl_FullStateFilters.obj"\
 	"c2_aircraftControl_FullStateFilters.obj"\
+	"c3_aircraftControl_FullStateFilters.obj"\
 	"aircraftControl_FullStateFilters_sfun_registry.obj"\
 	"lccstub.obj"\
 	"C:\Program Files (x86)\MATLAB\R2014a\sys\lcc\mex\lccdef.def"\
@@ -35,6 +36,8 @@ c1_aircraftControl_FullStateFilters.obj :	"c1_aircraftControl_FullStateFilters.c
 	$(CC) $(CFLAGS) $(INCLUDE_PATH) "c1_aircraftControl_FullStateFilters.c"
 c2_aircraftControl_FullStateFilters.obj :	"c2_aircraftControl_FullStateFilters.c"
 	$(CC) $(CFLAGS) $(INCLUDE_PATH) "c2_aircraftControl_FullStateFilters.c"
+c3_aircraftControl_FullStateFilters.obj :	"c3_aircraftControl_FullStateFilters.c"
+	$(CC) $(CFLAGS) $(INCLUDE_PATH) "c3_aircraftControl_FullStateFilters.c"
 aircraftControl_FullStateFilters_sfun_registry.obj :	"aircraftControl_FullStateFilters_sfun_registry.c"
 	$(CC) $(CFLAGS) $(INCLUDE_PATH) "aircraftControl_FullStateFilters_sfun_registry.c"
 lccstub.obj :	"C:\Program Files (x86)\MATLAB\R2014a\sys\lcc\mex\lccstub.c"

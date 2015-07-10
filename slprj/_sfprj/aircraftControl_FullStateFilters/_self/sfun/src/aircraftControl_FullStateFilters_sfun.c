@@ -4,6 +4,7 @@
 #include "aircraftControl_FullStateFilters_sfun_debug_macros.h"
 #include "c1_aircraftControl_FullStateFilters.h"
 #include "c2_aircraftControl_FullStateFilters.h"
+#include "c3_aircraftControl_FullStateFilters.h"
 
 /* Type Definitions */
 
@@ -42,6 +43,12 @@ unsigned int sf_aircraftControl_FullStateFilters_method_dispatcher(SimStruct
     return 1;
   }
 
+  if (chartFileNumber==3) {
+    c3_aircraftControl_FullStateFilters_method_dispatcher(simstructPtr, method,
+      data);
+    return 1;
+  }
+
   return 0;
 }
 
@@ -75,10 +82,10 @@ unsigned int sf_aircraftControl_FullStateFilters_process_check_sum_call( int
       ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(0U);
       ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(0U);
     } else if (!strcmp(commandName,"makefile")) {
-      ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(4162155303U);
-      ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(1573380716U);
-      ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(797985244U);
-      ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(2836910404U);
+      ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(818783339U);
+      ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(3459679608U);
+      ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(1416117971U);
+      ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(1732152841U);
     } else if (nrhs==3 && !strcmp(commandName,"chart")) {
       unsigned int chartFileNumber;
       chartFileNumber = (unsigned int)mxGetScalar(prhs[2]);
@@ -99,6 +106,14 @@ unsigned int sf_aircraftControl_FullStateFilters_process_check_sum_call( int
           break;
         }
 
+       case 3:
+        {
+          extern void sf_c3_aircraftControl_FullStateFilters_get_check_sum
+            (mxArray *plhs[]);
+          sf_c3_aircraftControl_FullStateFilters_get_check_sum(plhs);
+          break;
+        }
+
        default:
         ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(0.0);
         ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(0.0);
@@ -114,10 +129,10 @@ unsigned int sf_aircraftControl_FullStateFilters_process_check_sum_call( int
       return 0;
     }
   } else {
-    ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(3159538063U);
-    ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(1239690849U);
-    ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(1458199206U);
-    ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(3943368431U);
+    ((real_T *)mxGetPr((plhs[0])))[0] = (real_T)(3391096308U);
+    ((real_T *)mxGetPr((plhs[0])))[1] = (real_T)(2137300976U);
+    ((real_T *)mxGetPr((plhs[0])))[2] = (real_T)(1283859268U);
+    ((real_T *)mxGetPr((plhs[0])))[3] = (real_T)(186607652U);
   }
 
   return 1;
@@ -155,7 +170,7 @@ unsigned int sf_aircraftControl_FullStateFilters_autoinheritance_info( int nlhs,
     switch (chartFileNumber) {
      case 1:
       {
-        if (strcmp(aiChksum, "5w68PpIXbqNFsxh3WSzSAB") == 0) {
+        if (strcmp(aiChksum, "oUINmhN7gosRR5i1jRiTjB") == 0) {
           extern mxArray
             *sf_c1_aircraftControl_FullStateFilters_get_autoinheritance_info
             (void);
@@ -176,6 +191,21 @@ unsigned int sf_aircraftControl_FullStateFilters_autoinheritance_info( int nlhs,
             (void);
           plhs[0] =
             sf_c2_aircraftControl_FullStateFilters_get_autoinheritance_info();
+          break;
+        }
+
+        plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
+        break;
+      }
+
+     case 3:
+      {
+        if (strcmp(aiChksum, "706fMF9jq2bMlpieGmPLYG") == 0) {
+          extern mxArray
+            *sf_c3_aircraftControl_FullStateFilters_get_autoinheritance_info
+            (void);
+          plhs[0] =
+            sf_c3_aircraftControl_FullStateFilters_get_autoinheritance_info();
           break;
         }
 
@@ -244,6 +274,19 @@ unsigned int sf_aircraftControl_FullStateFilters_get_eml_resolved_functions_info
         break;
       }
 
+     case 3:
+      {
+        extern const mxArray
+          *sf_c3_aircraftControl_FullStateFilters_get_eml_resolved_functions_info
+          (void);
+        mxArray *persistentMxArray = (mxArray *)
+          sf_c3_aircraftControl_FullStateFilters_get_eml_resolved_functions_info
+          ();
+        plhs[0] = mxDuplicateArray(persistentMxArray);
+        mxDestroyArray(persistentMxArray);
+        break;
+      }
+
      default:
       plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
     }
@@ -281,7 +324,7 @@ unsigned int sf_aircraftControl_FullStateFilters_third_party_uses_info( int nlhs
     switch (chartFileNumber) {
      case 1:
       {
-        if (strcmp(tpChksum, "pcNqyitlba3ZIdq3PqcODB") == 0) {
+        if (strcmp(tpChksum, "MA4eD7grKmaDzi7z6VcRXE") == 0) {
           extern mxArray
             *sf_c1_aircraftControl_FullStateFilters_third_party_uses_info(void);
           plhs[0] = sf_c1_aircraftControl_FullStateFilters_third_party_uses_info
@@ -296,6 +339,17 @@ unsigned int sf_aircraftControl_FullStateFilters_third_party_uses_info( int nlhs
           extern mxArray
             *sf_c2_aircraftControl_FullStateFilters_third_party_uses_info(void);
           plhs[0] = sf_c2_aircraftControl_FullStateFilters_third_party_uses_info
+            ();
+          break;
+        }
+      }
+
+     case 3:
+      {
+        if (strcmp(tpChksum, "2wHByxgJNPJRlDmCjplk0G") == 0) {
+          extern mxArray
+            *sf_c3_aircraftControl_FullStateFilters_third_party_uses_info(void);
+          plhs[0] = sf_c3_aircraftControl_FullStateFilters_third_party_uses_info
             ();
           break;
         }
@@ -331,7 +385,7 @@ unsigned int sf_aircraftControl_FullStateFilters_updateBuildInfo_args_info( int
     switch (chartFileNumber) {
      case 1:
       {
-        if (strcmp(tpChksum, "pcNqyitlba3ZIdq3PqcODB") == 0) {
+        if (strcmp(tpChksum, "MA4eD7grKmaDzi7z6VcRXE") == 0) {
           extern mxArray
             *sf_c1_aircraftControl_FullStateFilters_updateBuildInfo_args_info
             (void);
@@ -353,6 +407,18 @@ unsigned int sf_aircraftControl_FullStateFilters_updateBuildInfo_args_info( int
         }
       }
 
+     case 3:
+      {
+        if (strcmp(tpChksum, "2wHByxgJNPJRlDmCjplk0G") == 0) {
+          extern mxArray
+            *sf_c3_aircraftControl_FullStateFilters_updateBuildInfo_args_info
+            (void);
+          plhs[0] =
+            sf_c3_aircraftControl_FullStateFilters_updateBuildInfo_args_info();
+          break;
+        }
+      }
+
      default:
       plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
     }
@@ -365,7 +431,7 @@ void aircraftControl_FullStateFilters_debug_initialize(struct
   SfDebugInstanceStruct* debugInstance)
 {
   _aircraftControl_FullStateFiltersMachineNumber_ = sf_debug_initialize_machine
-    (debugInstance,"aircraftControl_FullStateFilters","sfun",0,2,0,0,0);
+    (debugInstance,"aircraftControl_FullStateFilters","sfun",0,3,0,0,0);
   sf_debug_set_machine_event_thresholds(debugInstance,
     _aircraftControl_FullStateFiltersMachineNumber_,0,0);
   sf_debug_set_machine_data_thresholds(debugInstance,

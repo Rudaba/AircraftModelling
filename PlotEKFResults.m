@@ -1,17 +1,17 @@
-function PlotEKFResults(EKFData,measurementData)
+function PlotEKFResults(filterData,measurementData)
 
-getData     = load(EKFData);
+getData     = load(filterData);
 getData2    = load(measurementData);
 
-KF_OUT      = [getData.EKF.data];
+FDI_OUT      = [getData.FDI.data];
 measData    = [getData2.AO.data];
 
-time        = KF_OUT(:,1);
-predAO      = KF_OUT(:,2:7);
-states      = KF_OUT(:,8:31);
-covs        = sqrt(KF_OUT(:,38:61));
-innovations = KF_OUT(:,62:67);
-S           = sqrt(KF_OUT(:,68:73));
+time        = FDI_OUT(:,1);
+predAO      = FDI_OUT(:,2:7);
+states      = FDI_OUT(:,8:31);
+covs        = sqrt(FDI_OUT(:,38:61));
+innovations = FDI_OUT(:,62:67);
+S           = sqrt(FDI_OUT(:,68:73));
 
 
 name_string   = {'CX_dE1'; 'CX_dE2';...

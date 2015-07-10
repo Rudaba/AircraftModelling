@@ -61,7 +61,7 @@ innovation      = zeros(6,1);
 
 %*****Define Q and R matrices*****
 % Qcov = diag(1e-9*[0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2,0.1^2]);
-Qcov        = (eye(30,30)*0.1).^2;
+Qcov        = (eye(30,30)*0.01).^2;
 Qcov(1,1)   = 0.1^2;
 Qcov(2,2)   = 0.1^2;
 Qcov(3,3)   = 0.1^2;
@@ -204,16 +204,27 @@ rdot = (c8*p-c2*r+c9*heng).*q+qbar*S*b*(c4*Cl+c9*Cn);
 
 %**************Predict************
 %Accelerations
-pStates(1,1)    = (qbar*S*CX+T)/m; 
-pStates(2,1)    = qbar*S*CY/m; 
-pStates(3,1)    = qbar*S*CZ/m;
+ax              = (qbar*S*CX+T)/m; 
+ay              = qbar*S*CY/m; 
+az              = qbar*S*CZ/m;
 
 %Angular Rates
 %Trapezoidal Integration and Jacobian
-pStates(4,1)    = p + dt*(prev_pdot+pdot)/2;
-pStates(5,1)    = q + dt*(prev_qdot+qdot)/2;
-pStates(6,1)    = r + dt*(prev_rdot+rdot)/2;
+p               = p + dt*(prev_pdot+pdot)/2;
+q               = q + dt*(prev_qdot+qdot)/2;
+r               = r + dt*(prev_rdot+rdot)/2;
+
 prevOmegaDots   = [pdot;qdot;rdot];
+
+
+%Update filter states
+pStates(1,1)    = ax; 
+pStates(2,1)    = ay; 
+pStates(3,1)    = az;
+
+pStates(4,1)    = p;
+pStates(5,1)    = q;
+pStates(6,1)    = r;
 
 F = eye(30);
 
